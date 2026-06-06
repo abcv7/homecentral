@@ -23,5 +23,6 @@
         <module>home-notification-api</module>
         <module>home-fridge-api</module>
         <module>home-friend-api</module>
+        <module>home-workshop-api</module>
     </modules>
 </project>

@@ -22,5 +22,6 @@
         <module>home-notification</module>
         <module>home-fridge</module>
         <module>home-friend</module>
+        <module>home-workshop</module>
     </modules>
 </project>

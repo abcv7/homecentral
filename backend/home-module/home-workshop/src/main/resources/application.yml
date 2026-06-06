@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: home-workshop
+  profiles:
+    active: local
+
+server:
+  address: 0.0.0.0
+  port: 18108
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  default-flat-param-object: true
+  swagger-ui:
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+
+knife4j:
+  enable: true
+  setting:
+    language: ZH_CN
+
+seata:
+  enabled: ${SEATA_ENABLED:false}
+
+spring.cloud.nacos:
+  discovery:
+    enabled: ${NACOS_DISCOVERY_ENABLED:false}
+  config:
+    import-check:
+      enabled: false

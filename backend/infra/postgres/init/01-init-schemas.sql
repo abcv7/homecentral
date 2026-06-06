@@ -4,3 +4,4 @@ create schema if not exists home_life;
 create schema if not exists home_file;
 create schema if not exists home_notification;
 create schema if not exists home_fridge;
+create schema if not exists home_workshop;
