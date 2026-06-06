@@ -44,8 +44,9 @@
       </n-space>
     </n-card>
 
-    <!-- Table -->
+    <!-- Table (desktop) / Cards (mobile) -->
     <n-data-table
+      v-if="!isMobile"
       :columns="columns"
       :data="list"
       :loading="loading"
@@ -53,6 +54,92 @@
       :bordered="true"
       :scroll-x="900"
     />
+
+    <div v-else>
+      <n-spin :show="loading">
+        <n-empty v-if="!loading && list.length === 0" description="暂无包裹" />
+        <n-list bordered>
+          <n-list-item v-for="row in list" :key="row.id">
+            <n-thing>
+              <template #header>
+                <n-space align="center" :size="6" :wrap="false">
+                  <n-text strong>{{ row.courierCompany || '未知快递' }}</n-text>
+                  <n-tag
+                    :type="row.status === 'PENDING_PICKUP' ? 'warning' : row.status === 'PICKED_UP' ? 'info' : 'success'"
+                    size="small"
+                    round
+                  >
+                    {{ statusMap[row.status] }}
+                  </n-tag>
+                </n-space>
+              </template>
+              <template #description>
+                <n-space vertical :size="2">
+                  <n-text depth="2" style="font-size:13px;">
+                    运单号：{{ row.trackingNumber }}
+                  </n-text>
+                  <n-space :size="6" :wrap="false" align="center">
+                    <n-text depth="3" style="font-size:12px;">
+                      归属：{{ row.ownerName || '我' }}
+                    </n-text>
+                    <n-divider vertical />
+                    <n-text depth="3" style="font-size:12px;">
+                      {{ row.daysAtStation }} 天
+                    </n-text>
+                    <n-tag
+                      v-if="row.daysAtStation >= 3"
+                      type="error"
+                      size="tiny"
+                      round
+                    >
+                      紧急
+                    </n-tag>
+                    <n-tag
+                      v-else-if="row.daysAtStation === 2"
+                      type="warning"
+                      size="tiny"
+                      round
+                    >
+                      注意
+                    </n-tag>
+                    <n-divider vertical />
+                    <n-tag size="tiny" :type="row.source === 'API' ? 'info' : 'default'">
+                      {{ row.source === 'API' ? 'API' : '手动' }}
+                    </n-tag>
+                    <n-tag
+                      v-if="(row.sharedCount ?? 0) > 0"
+                      type="success"
+                      size="tiny"
+                    >
+                      分享 · {{ row.sharedCount }}
+                    </n-tag>
+                  </n-space>
+                </n-space>
+              </template>
+            </n-thing>
+            <template #suffix>
+              <n-dropdown :options="mobileRowMenu(row)" trigger="click" @select="(key) => onMobileRowAction(key, row)">
+                <n-button quaternary circle size="small">
+                  <template #icon><n-icon><CreateOutline /></n-icon></template>
+                </n-button>
+              </n-dropdown>
+            </template>
+          </n-list-item>
+        </n-list>
+      </n-spin>
+
+      <n-pagination
+        v-if="list.length > 0"
+        v-model:page="pagination.page"
+        v-model:page-size="pagination.pageSize"
+        :item-count="pagination.itemCount"
+        :page-sizes="[10, 20, 50]"
+        show-size-picker
+        style="margin-top:12px; justify-content:center;"
+        @update:page="(p) => { pagination.page = p; fetchList() }"
+        @update:page-size="(s) => { pagination.pageSize = s; pagination.page = 1; fetchList() }"
+      />
+    </div>
 
     <!-- Create / Edit Modal -->
     <n-modal
@@ -304,7 +391,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, h, computed } from 'vue'
-import { useMessage, NButton, NTag, NSpace, NIcon, NTimeline, NTimelineItem, NDescriptions, NDescriptionsItem, NDivider, NH5, NSpin, NEmpty, NBadge, NFloatButton, NList, NListItem, NThing, NText, NH6 } from 'naive-ui'
+import { useMessage, NButton, NTag, NSpace, NIcon, NTimeline, NTimelineItem, NDescriptions, NDescriptionsItem, NDivider, NH5, NSpin, NEmpty, NBadge, NFloatButton, NList, NListItem, NThing, NText, NH6, NDropdown, NPagination } from 'naive-ui'
 import { AddOutline, CreateOutline, EyeOutline, LocateOutline, CameraOutline, ShareSocialOutline } from '@vicons/ionicons5'
 import type { DataTableColumn, FormInst, FormRules, SelectOption } from 'naive-ui'
 import type { ParcelVO, ParcelStatus, ParcelCreateRequest, ParcelUpdateRequest, SharedParcelUserVO, TrackingVO } from '../../types/api'
@@ -474,6 +561,30 @@ async function openEdit(row: ParcelVO) {
   form.arrivedDateTs = null
   fetchPhoneTail()
   showModal.value = true
+}
+
+// --- Mobile row menu ---
+function mobileRowMenu(row: ParcelVO) {
+  const opts: { label: string; key: string }[] = [
+    { label: '查看详情', key: 'detail' },
+  ]
+  if (row.status === 'PENDING_PICKUP') opts.push({ label: '标记取件', key: 'pickup' })
+  if (row.status === 'PICKED_UP') opts.push({ label: '标记收货', key: 'receive' })
+  opts.push({ label: '查询物流', key: 'tracking' })
+  opts.push({ label: '分享', key: 'share' })
+  if (row.status === 'RECEIVED') opts.push({ label: '删除', key: 'delete' })
+  return opts
+}
+
+function onMobileRowAction(key: string, row: ParcelVO) {
+  switch (key) {
+    case 'detail': openDetail(row); break
+    case 'pickup': handlePickup(row); break
+    case 'receive': handleReceive(row); break
+    case 'tracking': handleTracking(row); break
+    case 'share': openShare(row); break
+    case 'delete': confirmDelete(row); break
+  }
 }
 
 async function fetchPhoneTail() {
