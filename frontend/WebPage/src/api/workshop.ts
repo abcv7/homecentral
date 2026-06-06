@@ -1,42 +1,28 @@
 /**
  * 调酒台数据加载层
  * =================
- * 从 public/data/ 加载预构建的静态 JSON 索引。
+ * 后端化 (Phase N.1)：所有数据来自 /api/workshop/* 端点。
  * 内存单例缓存,避免重复 fetch。
- *
- * 索引构建: scripts/build_workshop_index.mjs (直接调 enjoycocktail.com GraphQL API)
  */
 
-import type { CocktailIndex, IngredientIndex } from '../types/workshop'
+import request from './request'
+import type { ApiResult } from '../types/api'
+import type { IngredientIndex } from '../types/workshop'
 
-const COCKTAILS_URL = '/data/cocktails_index.json'
-const INGREDIENTS_URL = '/data/ingredients_index.json'
+// ----- 原料索引 (替代原 public/data/ingredients_index.json) -----
 
-let _cocktails: CocktailIndex[] | null = null
 let _ingredients: IngredientIndex[] | null = null
 let _ingredientsById: Map<number, IngredientIndex> | null = null
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'force-cache' })
-  if (!res.ok) throw new Error(`Failed to load ${url}: HTTP ${res.status}`)
-  return (await res.json()) as T
-}
-
-/** 加载 598 鸡尾酒索引(单例) */
-export async function loadCocktails(): Promise<CocktailIndex[]> {
-  if (_cocktails) return _cocktails
-  _cocktails = await fetchJson<CocktailIndex[]>(COCKTAILS_URL)
-  return _cocktails
-}
-
-/** 加载原料索引(单例) */
+/** 拉所有原料 (~1500 条, 给搜索框用) */
 export async function loadIngredients(): Promise<IngredientIndex[]> {
   if (_ingredients) return _ingredients
-  _ingredients = await fetchJson<IngredientIndex[]>(INGREDIENTS_URL)
+  const res = await request.get<ApiResult<IngredientIndex[]>>('/workshop/ingredients')
+  _ingredients = res.data.data ?? []
   return _ingredients
 }
 
-/** 按 id 索引的原料字典(单例) */
+/** 按 id 索引的原料字典 (单例) */
 export async function loadIngredientsById(): Promise<Map<number, IngredientIndex>> {
   if (_ingredientsById) return _ingredientsById
   const list = await loadIngredients()
@@ -44,9 +30,66 @@ export async function loadIngredientsById(): Promise<Map<number, IngredientIndex
   return _ingredientsById
 }
 
+// ----- 推荐 (替代前端 recommend 纯函数) -----
+
+export interface BackendRecommendResult {
+  tier: 'full' | 'miss-1' | 'miss-2' | 'miss-3+'
+  cocktail: BackendCocktail
+  missingIngredients: BackendIngredient[]
+  matchedIngredients: BackendIngredient[]
+  missingCount: number
+}
+
+export interface BackendCocktail {
+  id: number
+  nameZh: string
+  nameEn: string
+  nameAlias: string[]
+  cover: string | null
+  views: number
+  recipeZh: string
+  methodZh: string
+  aroma: string
+  taste: string
+  style: string
+  scene: string
+  history: string
+  sourceUrl?: string
+  ingredients?: BackendIngredient[]
+}
+
+export interface BackendIngredient {
+  id: number
+  nameZh: string
+  nameEn: string
+  aliases: string[]
+  defaultBottleMl?: number | null
+  cocktailCount?: number
+  plannedAmountMl?: number | null
+  isMain?: boolean
+}
+
+export interface RecommendPayload {
+  ingredientIds: number[]
+  mode: 'STRICT' | 'MAIN'
+}
+
+/** 调后端 recommend 端点 */
+export async function recommendCocktails(
+  ingredientIds: number[],
+  mode: 'STRICT' | 'MAIN',
+): Promise<BackendRecommendResult[]> {
+  const res = await request.post<ApiResult<BackendRecommendResult[]>>(
+    '/workshop/recommend',
+    { ingredientIds, mode },
+  )
+  return res.data.data ?? []
+}
+
+// ----- 缓存清理 -----
+
 /** 清空缓存(开发/测试用) */
 export function clearCache(): void {
-  _cocktails = null
   _ingredients = null
   _ingredientsById = null
 }
