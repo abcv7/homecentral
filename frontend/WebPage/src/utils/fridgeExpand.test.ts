@@ -4,13 +4,13 @@ import type { FridgeItemVO } from '../types/fridge'
 
 function mk(over: Partial<FridgeItemVO> & { id: number; name: string }): FridgeItemVO {
   return {
+    ...over,
     id: over.id,
     name: over.name,
     zone: over.zone ?? 'REFRIGERATED',
     source: over.source ?? 'MANUAL',
     status: over.status ?? 'ACTIVE',
     quantity: over.quantity,
-    ...over,
   } as FridgeItemVO
 }
 
