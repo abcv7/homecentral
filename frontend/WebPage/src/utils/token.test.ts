@@ -2,7 +2,6 @@ import { describe, expect, it, beforeEach } from 'vitest'
 import {
   getAccessToken, setAccessToken,
   getRefreshToken, setRefreshToken,
-  getUsername, setUsername,
   clearTokens,
 } from './token'
 
@@ -23,20 +22,12 @@ describe('token', () => {
     expect(getRefreshToken()).toBe('refresh-token-xyz')
   })
 
-  it('username: get/set roundtrip', () => {
-    expect(getUsername()).toBeNull()
-    setUsername('alice')
-    expect(getUsername()).toBe('alice')
-  })
-
-  it('clearTokens removes all three keys atomically', () => {
+  it('clearTokens removes both token keys atomically', () => {
     setAccessToken('a')
     setRefreshToken('b')
-    setUsername('c')
     clearTokens()
     expect(getAccessToken()).toBeNull()
     expect(getRefreshToken()).toBeNull()
-    expect(getUsername()).toBeNull()
   })
 
   it('overwrites existing values on re-set', () => {
