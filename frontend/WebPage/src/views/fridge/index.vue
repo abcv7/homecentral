@@ -336,26 +336,22 @@ import {
   EllipsisHorizontal, SnowOutline, AddCircle, BasketOutline, CloseOutline,
 } from '@vicons/ionicons5'
 import {
-  listItems,
-  listCategories,
-  listTemplates,
-  getDefaultTemplate,
   activateTemplate,
   updateTemplate,
   moveItem,
   recognizeImage,
   consumeOneItem,
   confirmShopping,
-  listShoppingHistory,
   reuseShoppingBatch,
   deleteItem,
 } from '../../api/fridge'
 import type {
-  FridgeCategoryVO, FridgeItemVO, FridgeRecognizeVO, FridgeShoppingHistoryVO,
+  FridgeItemVO, FridgeRecognizeVO, FridgeShoppingHistoryVO,
   FridgeTemplateVO, FridgeZone,
 } from '../../types/fridge'
 import { groupItems, resolvePosition, type FridgeLocation, isCrossZone } from '../../utils/subZoneMapping'
 import { useBreakpoint } from '../../composables/useBreakpoint'
+import { useFridgeData, nowHHmmss } from '../../composables/useFridgeData'
 import FridgeVisual from './FridgeVisual.vue'
 import FridgeBasket from './FridgeBasket.vue'
 import FridgeShoppingHistory from './FridgeShoppingHistory.vue'
@@ -397,17 +393,12 @@ function cycleViewMobile() {
   else viewMode.value = 'card'
 }
 
-// 数据
-const items = ref<FridgeItemVO[]>([])
-const activeItems = computed(() => items.value.filter((it) => it.status === 'ACTIVE' || it.status === 'PENDING'))
-const categories = ref<FridgeCategoryVO[]>([])
-const templates = ref<FridgeTemplateVO[]>([])
-const currentTemplate = ref<FridgeTemplateVO | null>(null)
-const lastSavedAt = ref<string | null>(null)
-const tableRefreshKey = ref(0)
-
-// 统计
-const stats = ref({ total: 0, expired: 0, expiringSoon: 0, fresh: 0 })
+// 数据（composable：状态 + 加载 + 统计）
+const {
+  items, activeItems, categories, templates, currentTemplate, history,
+  stats, lastSavedAt, tableRefreshKey,
+  loadItems, loadCategories, loadTemplates, loadHistory, refreshAll,
+} = useFridgeData()
 
 // 跨区确认
 interface PendingMove {
@@ -435,8 +426,7 @@ const batchSaving = ref(false)
 const showFirstRun = ref(false)
 const activatingTemplateId = ref<number | null>(null)
 
-// 采购历史
-const history = ref<FridgeShoppingHistoryVO[]>([])
+// 采购历史（来自 useFridgeData）
 const showConfirmPurchase = ref(false)
 const showHistoryBasket = ref(false)
 const activeHistoryBatch = ref<FridgeShoppingHistoryVO | null>(null)
@@ -497,67 +487,6 @@ function locationLabel(loc: FridgeLocation, layer: number): string {
   return `${labels[loc]} L${layer + 1}`
 }
 
-function pad(n: number) { return n < 10 ? `0${n}` : `${n}` }
-function nowStr() {
-  const d = new Date()
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
-}
-
-function recomputeStats() {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const threshold = new Date(today)
-  threshold.setDate(threshold.getDate() + 3)
-  let total = 0
-  let expired = 0
-  let expiringSoon = 0
-  for (const it of items.value) {
-    if (it.status !== 'ACTIVE') continue
-    total++
-    if (!it.expiryDate) continue
-    const exp = new Date(it.expiryDate)
-    exp.setHours(0, 0, 0, 0)
-    if (exp.getTime() < today.getTime()) expired++
-    else if (exp.getTime() <= threshold.getTime()) expiringSoon++
-  }
-  stats.value = { total, expired, expiringSoon, fresh: total - expired - expiringSoon }
-}
-
-async function loadCategories() {
-  const res = await listCategories()
-  if (res.data?.success) {
-    categories.value = res.data.data ?? []
-  }
-}
-
-async function loadItems() {
-  const res = await listItems({ includePending: true })
-  if (res.data?.success) {
-    items.value = res.data.data ?? []
-    recomputeStats()
-  } else {
-    message.error(res.data?.message ?? '加载失败')
-  }
-}
-
-async function loadTemplates() {
-  const [listRes, defRes] = await Promise.all([listTemplates(), getDefaultTemplate()])
-  if (listRes.data?.success) templates.value = listRes.data.data ?? []
-  if (defRes.data?.success) currentTemplate.value = defRes.data.data
-}
-
-async function loadHistory() {
-  const res = await listShoppingHistory(50)
-  if (res.data?.success) history.value = res.data.data ?? []
-}
-
-function refreshAll() {
-  loadItems()
-  loadTemplates()
-  loadHistory()
-  tableRefreshKey.value++
-}
-
 async function onSwitchTemplate(id: number) {
   try {
     const res = await activateTemplate(id)
@@ -604,7 +533,7 @@ async function onUpdateTemplate(t: FridgeTemplateVO) {
       doorShelfCount: t.doorShelfCount,
     })
     if (res.data?.success) {
-      lastSavedAt.value = nowStr()
+      lastSavedAt.value = nowHHmmss()
       currentTemplate.value = res.data.data
       message.success('已自动保存')
     } else {

@@ -14,6 +14,10 @@
 import { computed, onMounted, onBeforeUnmount } from 'vue'
 import { NConfigProvider, darkTheme, useNotification, type GlobalThemeOverrides } from 'naive-ui'
 import { useTheme } from './composables/useTheme'
+import { useAuthStore } from './stores/auth'
+
+const authStore = useAuthStore()
+authStore.hydrate()
 
 const { resolved } = useTheme()
 

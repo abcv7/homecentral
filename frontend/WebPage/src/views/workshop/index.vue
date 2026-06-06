@@ -10,7 +10,7 @@ import ModeSwitcher from './components/ModeSwitcher.vue'
 import ResultsTabs from './components/ResultsTabs.vue'
 
 const store = useWorkshopStore()
-const { selectedIds, mode, cocktails, ingredientsById, loading, error, results, tierGroups } =
+const { selectedIds, mode, ingredientsById, loading, error, results, tierGroups } =
   storeToRefs(store)
 
 const activeTier = ref<ResultTier>('full')
@@ -30,7 +30,6 @@ watch(tierGroups, (g) => {
 
 onMounted(() => store.ensureLoaded())
 
-const totalCocktails = computed(() => cocktails.value.length)
 const totalIngredients = computed(() => ingredientsById.value.size)
 const resultCount = computed(() => results.value.length)
 </script>
@@ -42,8 +41,8 @@ const resultCount = computed(() => results.value.length)
         <h1 class="hero-title">🍸 调酒台</h1>
         <p class="hero-sub">
           勾选手头的原料,自动告诉你能调哪些鸡尾酒。
-          <NText v-if="totalCocktails > 0" depth="3" style="font-size: 13px;">
-            数据 {{ totalCocktails }} 款 · {{ totalIngredients }} 原料
+          <NText v-if="totalIngredients > 0" depth="3" style="font-size: 13px;">
+            数据 {{ totalIngredients }} 原料
           </NText>
         </p>
       </div>

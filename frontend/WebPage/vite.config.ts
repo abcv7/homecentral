@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+import compression from 'vite-plugin-compression'
 import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
@@ -76,12 +77,14 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
           {
-            // API GET: stale-while-revalidate, 5min TTL
-            urlPattern: ({ url }) => url.pathname.startsWith('/api/') && url.pathname.match(/\/(items|templates|categories|shopping|anniversaries|reminders|parcels|friends|groups|notifications|members|profile)$/),
-            handler: 'StaleWhileRevalidate',
+            // API GET: NetworkFirst（数据都在后端）
+            // 5s 内拿到后端响应即用；网络失败时回落到缓存
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'api-get',
-              expiration: { maxEntries: 200, maxAgeSeconds: 5 * 60 },
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 200, maxAgeSeconds: 24 * 60 * 60 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
@@ -102,6 +105,13 @@ export default defineConfig({
         type: 'module',
       },
     }),
+    // 预压缩成 .gz，部署时由 nginx 自动选择（brotli 在新 Vite 下路径异常）
+    compression({
+      algorithm: 'gzip',
+      ext: '.gz',
+      threshold: 1024,
+      deleteOriginFile: false,
+    }),
   ],
   server: {
     host: '0.0.0.0',
@@ -117,6 +127,10 @@ export default defineConfig({
   build: {
     // 提高 chunk 警告阈值（precache 模式下整体可接受）
     chunkSizeWarningLimit: 800,
+    // 强化 minification
+    minify: 'esbuild',
+    cssCodeSplit: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
         // 手动分包：把 vendor libs 拆出独立 chunk，提升缓存命中率
