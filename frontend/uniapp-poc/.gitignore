@@ -1,0 +1,6 @@
+node_modules
+dist
+unpackage
+.cache
+.DS_Store
+.env.local

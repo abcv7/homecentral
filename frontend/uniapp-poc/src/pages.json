@@ -1,0 +1,16 @@
+{
+  "pages": [
+    {
+      "path": "pages/fridge/index",
+      "style": {
+        "navigationBarTitleText": "冰箱"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "HomeCentral POC",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#F4F5F7"
+  }
+}
