@@ -86,3 +86,13 @@
 # ===== Test artifacts =====
 /backend/**/test-output/
 /backend/**/jacoco.exec
+
+# ===== uni-app build outputs =====
+/frontend/uniapp-poc/node_modules/
+/frontend/uniapp-poc/dist/
+/frontend/uniapp-poc/dist-ssr/
+/frontend/uniapp-poc/.vite/
+/frontend/uniapp-poc/.cache/
+
+# ===== opencode IDE =====
+/.opencode/

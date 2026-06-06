@@ -65,23 +65,33 @@
     "list": [
       {
         "pagePath": "pages/fridge/index",
-        "text": "冰箱"
+        "text": "冰箱",
+        "iconPath": "static/tabbar/fridge.png",
+        "selectedIconPath": "static/tabbar/fridge-active.png"
       },
       {
         "pagePath": "pages/parcel/index",
-        "text": "驿站"
+        "text": "驿站",
+        "iconPath": "static/tabbar/parcel.png",
+        "selectedIconPath": "static/tabbar/parcel-active.png"
       },
       {
         "pagePath": "pages/life/index",
-        "text": "生活"
+        "text": "生活",
+        "iconPath": "static/tabbar/life.png",
+        "selectedIconPath": "static/tabbar/life-active.png"
       },
       {
         "pagePath": "pages/friend/index",
-        "text": "好友"
+        "text": "好友",
+        "iconPath": "static/tabbar/friend.png",
+        "selectedIconPath": "static/tabbar/friend-active.png"
       },
       {
         "pagePath": "pages/profile/index",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "static/tabbar/profile.png",
+        "selectedIconPath": "static/tabbar/profile-active.png"
       }
     ]
   },
