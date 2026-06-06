@@ -1,0 +1,53 @@
+environment/
+.m2/
+
+node_modules/
+dist/
+.vite/
+
+logs/
+*.log
+.playwright-mcp/
+.mc-extract/
+.repo/
+.serena/
+
+*.png
+!frontend/WebPage/public/**/*.png
+!frontend/WebPage/src/**/*.png
+!frontend/WebPage/src/assets/**/*.png
+
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# IDE / OS
+*.swp
+*.swo
+*~
+
+# Backend
+backend/target/
+**/target/
+**/*.class
+**/*.jar
+**/*.war
+
+# Local config with secrets
+infra/configs/local.yml
+backend/**/application-local.yml
+!backend/**/application-local.yml.example
+
+# Flyway repair
+backend/**/flyway.conf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Temporary
+*.tmp
+*.bak
