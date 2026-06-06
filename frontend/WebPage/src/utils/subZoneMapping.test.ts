@@ -4,13 +4,13 @@ import type { FridgeItemVO } from '../types/fridge'
 
 function mk(over: Partial<FridgeItemVO> & { id: number; name: string }): FridgeItemVO {
   return {
+    ...over,
     id: over.id,
     name: over.name,
     zone: over.zone ?? 'REFRIGERATED',
     source: over.source ?? 'MANUAL',
     status: over.status ?? 'ACTIVE',
     subZone: over.subZone,
-    ...over,
   } as FridgeItemVO
 }
 
@@ -78,7 +78,7 @@ describe('resolvePosition()', () => {
   })
 
   it('无 subZone + 无 zone → 兜底 basket', () => {
-    const pos = resolvePosition(mk({ id: 1, name: 'a', zone: null }))
+    const pos = resolvePosition({ id: 1, name: 'a', zone: null, source: 'MANUAL', status: 'ACTIVE' } as FridgeItemVO)
     expect(pos.location).toBe('basket')
   })
 
