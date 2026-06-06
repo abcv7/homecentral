@@ -1,6 +1,6 @@
 <template>
-  <div class="basket" :class="{ 'is-mobile': isMobile }">
-    <div class="basket-header">
+  <div class="basket" :class="{ 'is-mobile': isMobile, 'is-embedded': embedded }">
+    <div v-if="!embedded" class="basket-header">
       <div class="title-row">
         <div class="icon-box">
           <n-icon size="18" color="#f97316"><basket-outline /></n-icon>
@@ -59,6 +59,7 @@ import { expandByQuantity } from '../../utils/fridgeExpand'
 const props = defineProps<{
   items: FridgeItemVO[]
   isMobile?: boolean
+  embedded?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -136,6 +137,14 @@ function expiryClass(days: number) {
   padding: 4px 0;
   background: transparent;
   gap: 8px;
+}
+.basket.is-embedded {
+  min-height: 0;
+  gap: 10px;
+}
+.basket.is-embedded .basket-drop {
+  min-height: 0;
+  padding: 10px;
 }
 .basket-header {
   display: flex;

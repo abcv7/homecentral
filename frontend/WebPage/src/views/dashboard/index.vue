@@ -56,12 +56,14 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-@media (max-width: 1024px) {
+/* Tablet portrait (768-1023) → 2 cols */
+@media (max-width: 1023px) {
   :deep(.n-grid) {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
-@media (max-width: 480px) {
+/* Mobile (<=767) → 1 col */
+@media (max-width: 767px) {
   :deep(.n-grid) {
     grid-template-columns: 1fr !important;
   }

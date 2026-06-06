@@ -1,6 +1,6 @@
 <template>
-  <div class="history" :class="{ 'is-mobile': isMobile }">
-    <div class="history-header">
+  <div class="history" :class="{ 'is-mobile': isMobile, 'is-embedded': embedded }">
+    <div v-if="!embedded" class="history-header">
       <div class="title-row">
         <div class="icon-box">
           <n-icon size="18" color="#0ea5e9"><time-outline /></n-icon>
@@ -53,6 +53,7 @@ const props = defineProps<{
   items: FridgeShoppingHistoryVO[]
   categories: FridgeCategoryVO[]
   isMobile?: boolean
+  embedded?: boolean
 }>()
 
 defineEmits<{
@@ -112,6 +113,13 @@ function formatTime(iso?: string) {
   max-height: none;
   position: static;
   gap: 8px;
+}
+.history.is-embedded {
+  min-height: 0;
+  max-height: 100%;
+  position: static;
+  padding: 14px;
+  gap: 10px;
 }
 .history-header {
   display: flex;

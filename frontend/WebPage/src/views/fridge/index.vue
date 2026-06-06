@@ -56,8 +56,31 @@
     </div>
 
     <!-- ============ 主视图区 ============ -->
+    <!-- iPad 横屏：紧凑 3-col 200/1fr/260 -->
+    <FridgeIPadLandscapeView
+      v-if="isIPadLandscape"
+      :view-mode="viewMode"
+      :basket-items="grouped.basket"
+      :active-items="activeItems"
+      :history="history"
+      :categories="categories"
+      :current-template="currentTemplate"
+      :table-refresh-key="tableRefreshKey"
+      @update:view-mode="(v) => (viewMode = v)"
+      @add-item="showQuickAdd = true"
+      @recognize="openRecognize"
+      @refresh="refreshAll"
+      @open-settings="showSettings = true"
+      @drop-basket="onDropBasket"
+      @drop-visual="onDropVisual"
+      @item-click="onItemClick"
+      @open-history-batch="onOpenHistoryBatch"
+      @reuse-history-one="onReuseHistoryOne"
+      @confirm-purchase="onConfirmPurchase"
+    />
+
     <!-- 桌面：3 列（采购篮 / 视觉 / 历史） -->
-    <div v-if="!isMobile && viewMode === 'visual'" class="visual-layout">
+    <div v-else-if="!isMobile && viewMode === 'visual'" class="visual-layout">
       <FridgeBasket
         :items="grouped.basket"
         @drop-basket="onDropBasket"
@@ -338,6 +361,7 @@ import FridgeBasket from './FridgeBasket.vue'
 import FridgeShoppingHistory from './FridgeShoppingHistory.vue'
 import FridgeCardView from './FridgeCardView.vue'
 import FridgeTable from './FridgeTable.vue'
+import FridgeIPadLandscapeView from './FridgeIPadLandscapeView.vue'
 import QuickAddDialog from './QuickAddDialog.vue'
 import MoveConfirmDialog from './MoveConfirmDialog.vue'
 import FirstRunGuide from './FirstRunGuide.vue'
@@ -347,7 +371,7 @@ import HistoryBasketDialog from './HistoryBasketDialog.vue'
 import ItemActionSheet from './ItemActionSheet.vue'
 
 const message = useMessage()
-const { isMobile } = useBreakpoint()
+const { isMobile, isIPadLandscape } = useBreakpoint()
 
 // 视图模式：mobile 默认 card，桌面默认 visual
 const viewMode = ref<'visual' | 'card' | 'table'>(isMobile.value ? 'card' : 'visual')
