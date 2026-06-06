@@ -31,9 +31,36 @@ function checkAuth() {
 </script>
 
 <style>
-/* 全局样式 */
 page {
-  background-color: #f4f5f7;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --qwu-primary: #f97316;
+  --qwu-primary-light: #fff7ed;
+  --qwu-primary-dark: #c2410c;
+  --qwu-accent: #fbbf24;
+  --qwu-accent-light: #fef9c3;
+  --qwu-danger: #ef4444;
+  --qwu-danger-light: #fef2f2;
+  --qwu-success: #10b981;
+  --qwu-success-light: #ecfdf5;
+  --qwu-warning: #f59e0b;
+  --qwu-warning-light: #fffbeb;
+  --qwu-bg: #faf8f5;
+  --qwu-card: #ffffff;
+  --qwu-text: #1c1917;
+  --qwu-text-secondary: #78716c;
+  --qwu-text-muted: #a8a29e;
+  --qwu-border: #e7e5e4;
+  --qwu-border-light: #f5f5f4;
+  --qwu-shadow: 0 1px 3px rgba(28,25,23,0.06), 0 1px 2px rgba(28,25,23,0.04);
+  --qwu-shadow-md: 0 4px 6px -1px rgba(28,25,23,0.07), 0 2px 4px -2px rgba(28,25,23,0.05);
+  --qwu-radius: 14px;
+  --qwu-radius-sm: 10px;
+  --qwu-radius-xs: 6px;
+
+  background-color: var(--qwu-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  color: var(--qwu-text);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 </style>

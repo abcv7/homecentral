@@ -46,8 +46,11 @@ function goToRegister() {
 <template>
   <view class="login-page">
     <view class="login-card">
-      <text class="title">HomeCentral</text>
-      <text class="subtitle">家庭中心控制系统</text>
+      <view class="brand-icon">
+        <text class="brand-emoji">🏡</text>
+      </view>
+      <text class="title">栖物集</text>
+      <text class="subtitle">HOME CENTRAL · 家的中心</text>
 
       <view class="form">
         <view class="form-item">
@@ -91,31 +94,43 @@ function goToRegister() {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f97316 0%, #fbbf24 100%);
   padding: 24px;
 }
 .login-card {
   width: 100%;
   max-width: 380px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 36px 28px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--qwu-radius, 14px);
+  padding: 40px 28px;
+  box-shadow: var(--qwu-shadow-md, 0 4px 6px -1px rgba(28,25,23,0.07), 0 2px 4px -2px rgba(28,25,23,0.05));
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.brand-icon {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.brand-emoji {
+  font-size: 40px;
 }
 .title {
   display: block;
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 26px;
+  font-weight: 800;
   text-align: center;
-  color: #333;
+  color: var(--qwu-text, #1c1917);
+  letter-spacing: -0.5px;
 }
 .subtitle {
   display: block;
-  font-size: 14px;
+  font-size: 13px;
   text-align: center;
-  color: #999;
+  color: var(--qwu-text-muted, #a8a29e);
   margin-top: 4px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
 }
 .form {
   width: 100%;
@@ -126,51 +141,63 @@ function goToRegister() {
 .label {
   display: block;
   font-size: 13px;
-  color: #666;
+  color: var(--qwu-text-secondary, #78716c);
   margin-bottom: 6px;
+  font-weight: 500;
 }
 .input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1.5px solid var(--qwu-border, #e7e5e4);
+  border-radius: var(--qwu-radius-xs, 6px);
   font-size: 14px;
-  background: #fafafa;
+  background: var(--qwu-bg, #faf8f5);
   box-sizing: border-box;
+  color: var(--qwu-text, #1c1917);
+}
+.input:focus {
+  border-color: var(--qwu-primary, #f97316);
+  outline: none;
 }
 .error {
   display: block;
-  color: #f56c6c;
+  color: var(--qwu-danger, #ef4444);
   font-size: 13px;
   margin-bottom: 8px;
+  background: var(--qwu-danger-light, #fef2f2);
+  padding: 6px 10px;
+  border-radius: var(--qwu-radius-xs, 6px);
 }
 .login-btn {
   width: 100%;
   padding: 12px;
-  background: #667eea;
+  background: linear-gradient(135deg, #f97316, #f59e0b);
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--qwu-radius-sm, 10px);
   font-size: 15px;
   font-weight: 600;
   margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
 }
 .login-btn[disabled] {
-  background: #b0b8d6;
+  background: var(--qwu-border, #e7e5e4);
+  box-shadow: none;
 }
 .footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 24px;
 }
 .footer-text {
   font-size: 13px;
-  color: #999;
+  color: var(--qwu-text-muted, #a8a29e);
 }
 .link {
   font-size: 13px;
-  color: #667eea;
+  color: var(--qwu-primary, #f97316);
   margin-left: 4px;
+  font-weight: 600;
 }
 </style>

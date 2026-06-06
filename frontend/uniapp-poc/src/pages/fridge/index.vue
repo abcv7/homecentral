@@ -45,12 +45,12 @@ uniOnShow(() => load())
 const totalQty = computed(() => items.value.length)
 
 function highlightColor(item: FridgeItemVO): string {
-  if (!item.expiryDate) return '#67c23a'
+  if (!item.expiryDate) return '#10b981'
   const days = Math.floor((new Date(item.expiryDate).getTime() - Date.now()) / 86400000)
-  if (days < 0) return '#f56c6c'
-  if (days <= 3) return '#f56c6c'
-  if (days <= 7) return '#e6a23c'
-  return '#67c23a'
+  if (days < 0) return '#ef4444'
+  if (days <= 3) return '#ef4444'
+  if (days <= 7) return '#f59e0b'
+  return '#10b981'
 }
 
 async function onConsume(id: number) {
@@ -67,27 +67,27 @@ async function onDiscard(id: number) {
 <template>
   <view class="page">
     <view class="header">
-      <text class="title">🥶 冰箱</text>
-      <text class="subtitle">共 {{ totalQty }} 件</text>
+      <text class="title">🧊 冰箱</text>
+      <text class="subtitle">共 {{ totalQty }} 件食材</text>
     </view>
 
     <view v-if="stats" class="stats">
-      <view class="stat-card">
+      <view class="stat-card stat-expired">
         <text class="stat-num">{{ stats.expired }}</text>
         <text class="stat-label">已过期</text>
       </view>
-      <view class="stat-card">
+      <view class="stat-card stat-expiring">
         <text class="stat-num">{{ stats.expiringSoon }}</text>
         <text class="stat-label">临期</text>
       </view>
-      <view class="stat-card">
+      <view class="stat-card stat-fresh">
         <text class="stat-num">{{ stats.fresh }}</text>
         <text class="stat-label">新鲜</text>
       </view>
     </view>
 
     <view v-if="loading" class="loading">加载中…</view>
-    <view v-else-if="error" class="loading">错误: {{ error }}</view>
+    <view v-else-if="error" class="loading error-text">错误: {{ error }}</view>
 
     <view v-else class="list">
       <view
@@ -104,8 +104,8 @@ async function onDiscard(id: number) {
           过期: {{ item.expiryDate }}
         </text>
         <view class="item-actions">
-          <button class="btn-sm" @click="onConsume(item.id)">吃了</button>
-          <button class="btn-sm danger" @click="onDiscard(item.id)">丢弃</button>
+          <button class="btn-sm btn-warm" @click="onConsume(item.id)">吃了</button>
+          <button class="btn-sm btn-danger" @click="onDiscard(item.id)">丢弃</button>
         </view>
       </view>
     </view>
@@ -113,22 +113,130 @@ async function onDiscard(id: number) {
 </template>
 
 <style scoped>
-.page { padding: 16px; }
-.header { margin-bottom: 16px; }
-.title { font-size: 24px; font-weight: 700; display: block; }
-.subtitle { font-size: 14px; color: #888; margin-top: 4px; display: block; }
-.stats { display: flex; gap: 12px; margin-bottom: 16px; }
-.stat-card { flex: 1; background: #fff; border-radius: 8px; padding: 12px; text-align: center; }
-.stat-num { font-size: 20px; font-weight: 700; display: block; }
-.stat-label { font-size: 12px; color: #888; margin-top: 4px; display: block; }
-.loading { text-align: center; color: #888; padding: 40px 0; }
-.list { display: flex; flex-direction: column; gap: 8px; }
-.item { background: #fff; border-radius: 8px; padding: 12px; }
-.item-row { display: flex; justify-content: space-between; align-items: center; }
-.item-name { font-size: 15px; font-weight: 600; }
-.item-zone { font-size: 11px; color: #999; background: #f5f5f5; padding: 2px 6px; border-radius: 4px; }
-.item-expiry { font-size: 12px; color: #888; margin-top: 2px; display: block; }
-.item-actions { display: flex; gap: 8px; margin-top: 8px; }
-.btn-sm { font-size: 12px; padding: 4px 10px; background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; border-radius: 4px; }
-.btn-sm.danger { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+.page {
+  padding: 16px 20px;
+  padding-bottom: 80px;
+  background: var(--qwu-bg, #faf8f5);
+  min-height: 100vh;
+}
+.header {
+  margin-bottom: 20px;
+}
+.title {
+  font-size: 22px;
+  font-weight: 800;
+  display: block;
+  color: var(--qwu-text, #1c1917);
+  letter-spacing: -0.5px;
+}
+.subtitle {
+  font-size: 13px;
+  color: var(--qwu-text-muted, #a8a29e);
+  margin-top: 2px;
+  display: block;
+}
+.stats {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  flex: 1;
+  background: var(--qwu-card, #ffffff);
+  border-radius: var(--qwu-radius, 14px);
+  padding: 14px 12px;
+  text-align: center;
+  box-shadow: var(--qwu-shadow, 0 1px 3px rgba(28,25,23,0.06), 0 1px 2px rgba(28,25,23,0.04));
+  border-left: 4px solid transparent;
+}
+.stat-expired {
+  border-left-color: var(--qwu-danger, #ef4444);
+}
+.stat-expiring {
+  border-left-color: var(--qwu-warning, #f59e0b);
+}
+.stat-fresh {
+  border-left-color: var(--qwu-success, #10b981);
+}
+.stat-num {
+  font-size: 22px;
+  font-weight: 800;
+  display: block;
+  color: var(--qwu-text, #1c1917);
+}
+.stat-expired .stat-num { color: var(--qwu-danger, #ef4444); }
+.stat-expiring .stat-num { color: var(--qwu-warning, #f59e0b); }
+.stat-fresh .stat-num { color: var(--qwu-success, #10b981); }
+.stat-label {
+  font-size: 12px;
+  color: var(--qwu-text-muted, #a8a29e);
+  margin-top: 4px;
+  display: block;
+}
+.loading {
+  text-align: center;
+  color: var(--qwu-text-muted, #a8a29e);
+  padding: 40px 0;
+  font-size: 14px;
+}
+.error-text {
+  color: var(--qwu-danger, #ef4444);
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.item {
+  background: var(--qwu-card, #ffffff);
+  border-radius: var(--qwu-radius, 14px);
+  padding: 16px;
+  box-shadow: var(--qwu-shadow, 0 1px 3px rgba(28,25,23,0.06), 0 1px 2px rgba(28,25,23,0.04));
+}
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--qwu-text, #1c1917);
+}
+.item-zone {
+  font-size: 11px;
+  color: var(--qwu-primary, #f97316);
+  background: var(--qwu-primary-light, #fff7ed);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+.item-expiry {
+  font-size: 12px;
+  color: var(--qwu-text-secondary, #78716c);
+  margin-top: 4px;
+  display: block;
+}
+.item-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.btn-sm {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: var(--qwu-radius-xs, 6px);
+  font-weight: 500;
+  border: none;
+}
+.btn-warm {
+  background: var(--qwu-primary-light, #fff7ed);
+  color: var(--qwu-primary, #f97316);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+.btn-danger {
+  background: var(--qwu-danger-light, #fef2f2);
+  color: var(--qwu-danger, #ef4444);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
 </style>

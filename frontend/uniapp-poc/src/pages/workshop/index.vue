@@ -109,7 +109,7 @@ function clearAll() {
   <view class="page">
     <view class="header">
       <text class="title">🍸 调酒台</text>
-      <text class="subtitle">{{ ingredients.length }} 原料 · 选 {{ selectedIds.size }}</text>
+      <text class="subtitle">{{ ingredients.length }} 原料 · 已选 {{ selectedIds.size }}</text>
     </view>
 
     <view class="mode-bar">
@@ -145,7 +145,7 @@ function clearAll() {
       <view
         v-for="r in tierGroups[tier]"
         :key="r.cocktailId"
-        class="result"
+        :class="['result', `result-${tier}`]"
       >
         <text class="result-name">{{ r.name }}</text>
         <text v-if="r.nameEn" class="result-en">{{ r.nameEn }}</text>
@@ -156,28 +156,176 @@ function clearAll() {
 </template>
 
 <style scoped>
-.page { padding: 16px; padding-bottom: 80px; }
-.header { margin-bottom: 12px; }
-.title { font-size: 24px; font-weight: 700; display: block; }
-.subtitle { font-size: 13px; color: #888; margin-top: 4px; display: block; }
-.mode-bar { display: flex; gap: 6px; margin-bottom: 12px; }
-.mode-btn { font-size: 12px; padding: 6px 10px; background: #f5f5f5; color: #333; border: 1px solid #e5e5e5; border-radius: 4px; flex: 1; }
-.mode-btn.active { background: #1e293b; color: #fff; border-color: #1e293b; }
-.mode-btn.ghost { background: transparent; flex: 0 0 60px; }
-.search { margin-bottom: 12px; }
-.search-input { width: 100%; padding: 8px 12px; background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 14px; }
-.ingredient-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; max-height: 200px; overflow-y: auto; }
-.ing { padding: 4px 10px; background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 12px; display: flex; flex-direction: column; }
-.ing.selected { background: #1e293b; color: #fff; border-color: #1e293b; }
-.ing-name { font-size: 12px; }
-.ing-en { font-size: 10px; opacity: 0.6; }
-.run-btn { width: 100%; padding: 12px; background: #f97316; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; margin-bottom: 16px; }
-.run-btn:disabled { background: #d1d5db; }
-.error { color: #ef4444; font-size: 13px; margin-bottom: 8px; }
-.tier { margin-bottom: 12px; }
-.tier-title { font-size: 14px; font-weight: 600; display: block; margin-bottom: 6px; }
-.result { background: #fff; padding: 10px 12px; border-radius: 6px; margin-bottom: 6px; }
-.result-name { font-size: 14px; font-weight: 600; display: block; }
-.result-en { font-size: 11px; color: #888; display: block; }
-.result-meta { font-size: 11px; color: #888; display: block; margin-top: 2px; }
+.page {
+  padding: 16px 20px;
+  padding-bottom: 80px;
+  background: var(--qwu-bg, #faf8f5);
+  min-height: 100vh;
+}
+.header {
+  margin-bottom: 16px;
+}
+.title {
+  font-size: 22px;
+  font-weight: 800;
+  display: block;
+  color: var(--qwu-text, #1c1917);
+  letter-spacing: -0.5px;
+}
+.subtitle {
+  font-size: 13px;
+  color: var(--qwu-text-muted, #a8a29e);
+  margin-top: 2px;
+  display: block;
+}
+.mode-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.mode-btn {
+  font-size: 12px;
+  padding: 7px 12px;
+  background: var(--qwu-card, #ffffff);
+  color: var(--qwu-text-secondary, #78716c);
+  border: 1.5px solid var(--qwu-border, #e7e5e4);
+  border-radius: var(--qwu-radius-xs, 6px);
+  flex: 1;
+  font-weight: 500;
+}
+.mode-btn.active {
+  background: var(--qwu-primary, #f97316);
+  color: #fff;
+  border-color: var(--qwu-primary, #f97316);
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.25);
+}
+.mode-btn.ghost {
+  background: transparent;
+  flex: 0 0 60px;
+  border-color: var(--qwu-border, #e7e5e4);
+  color: var(--qwu-text-muted, #a8a29e);
+}
+.search {
+  margin-bottom: 14px;
+}
+.search-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--qwu-card, #ffffff);
+  border: 1.5px solid var(--qwu-border, #e7e5e4);
+  border-radius: var(--qwu-radius-xs, 6px);
+  font-size: 14px;
+  box-sizing: border-box;
+  color: var(--qwu-text, #1c1917);
+}
+.search-input:focus {
+  border-color: var(--qwu-primary, #f97316);
+  outline: none;
+}
+.ingredient-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.ing {
+  padding: 6px 12px;
+  background: var(--qwu-card, #ffffff);
+  border: 1.5px solid var(--qwu-border, #e7e5e4);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s;
+}
+.ing.selected {
+  background: var(--qwu-primary, #f97316);
+  color: #fff;
+  border-color: var(--qwu-primary, #f97316);
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.25);
+}
+.ing-name {
+  font-size: 12px;
+  font-weight: 500;
+}
+.ing-en {
+  font-size: 10px;
+  opacity: 0.6;
+}
+.run-btn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #f97316, #f59e0b);
+  color: #fff;
+  border: none;
+  border-radius: var(--qwu-radius-sm, 10px);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+.run-btn:disabled {
+  background: var(--qwu-border, #e7e5e4);
+  box-shadow: none;
+}
+.error {
+  color: var(--qwu-danger, #ef4444);
+  font-size: 13px;
+  margin-bottom: 8px;
+  background: var(--qwu-danger-light, #fef2f2);
+  padding: 6px 10px;
+  border-radius: var(--qwu-radius-xs, 6px);
+}
+.tier {
+  margin-bottom: 16px;
+}
+.tier-title {
+  font-size: 14px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+  color: var(--qwu-text, #1c1917);
+}
+.result {
+  background: var(--qwu-card, #ffffff);
+  padding: 12px 14px;
+  border-radius: var(--qwu-radius-sm, 10px);
+  margin-bottom: 8px;
+  box-shadow: var(--qwu-shadow, 0 1px 3px rgba(28,25,23,0.06), 0 1px 2px rgba(28,25,23,0.04));
+  border-left: 4px solid var(--qwu-border, #e7e5e4);
+}
+.result-full {
+  border-left-color: var(--qwu-success, #10b981);
+  background: var(--qwu-success-light, #ecfdf5);
+}
+.result-miss-1 {
+  border-left-color: var(--qwu-accent, #fbbf24);
+  background: var(--qwu-accent-light, #fef9c3);
+}
+.result-miss-2 {
+  border-left-color: var(--qwu-primary, #f97316);
+  background: var(--qwu-primary-light, #fff7ed);
+}
+.result-miss-3\+ {
+  border-left-color: var(--qwu-danger, #ef4444);
+  background: var(--qwu-danger-light, #fef2f2);
+}
+.result-name {
+  font-size: 14px;
+  font-weight: 600;
+  display: block;
+  color: var(--qwu-text, #1c1917);
+}
+.result-en {
+  font-size: 11px;
+  color: var(--qwu-text-muted, #a8a29e);
+  display: block;
+}
+.result-meta {
+  font-size: 11px;
+  color: var(--qwu-text-secondary, #78716c);
+  display: block;
+  margin-top: 2px;
+}
 </style>

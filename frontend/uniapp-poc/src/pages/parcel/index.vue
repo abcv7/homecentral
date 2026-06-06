@@ -52,7 +52,7 @@ async function onReceive(id: number) {
 
 const STATUS_MAP: Record<ParcelStatus, { label: string; color: string }> = {
   PENDING_PICKUP: { label: '待取件', color: '#f59e0b' },
-  PICKED_UP: { label: '已取件', color: '#3b82f6' },
+  PICKED_UP: { label: '已取件', color: '#f97316' },
   RECEIVED: { label: '已收货', color: '#10b981' },
 }
 </script>
@@ -78,6 +78,7 @@ const STATUS_MAP: Record<ParcelStatus, { label: string; color: string }> = {
         v-for="p in list"
         :key="p.id"
         class="item"
+        :style="{ borderLeft: `4px solid ${STATUS_MAP[p.status].color}` }"
       >
         <view class="item-row">
           <text class="item-courier">{{ p.courierCompany || '未知快递' }}</text>
@@ -91,8 +92,8 @@ const STATUS_MAP: Record<ParcelStatus, { label: string; color: string }> = {
           <text v-if="p.daysAtStation !== undefined" class="item-days">{{ p.daysAtStation }} 天</text>
         </view>
         <view v-if="p.status !== 'RECEIVED'" class="item-actions">
-          <button v-if="p.status === 'PENDING_PICKUP'" class="btn-sm" @click="onPickUp(p.id)">取件</button>
-          <button v-if="p.status === 'PICKED_UP'" class="btn-sm primary" @click="onReceive(p.id)">收货</button>
+          <button v-if="p.status === 'PENDING_PICKUP'" class="btn-sm btn-warm" @click="onPickUp(p.id)">取件</button>
+          <button v-if="p.status === 'PICKED_UP'" class="btn-sm btn-primary" @click="onReceive(p.id)">收货</button>
         </view>
       </view>
       <view v-if="list.length === 0" class="empty">暂无包裹</view>
@@ -101,25 +102,128 @@ const STATUS_MAP: Record<ParcelStatus, { label: string; color: string }> = {
 </template>
 
 <style scoped>
-.page { padding: 16px; }
-.header { margin-bottom: 12px; }
-.title { font-size: 24px; font-weight: 700; display: block; }
-.subtitle { font-size: 13px; color: #888; margin-top: 4px; display: block; }
-.filter { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-.filter-btn { font-size: 13px; padding: 6px 12px; background: #f5f5f5; color: #333; border: 1px solid #e5e5e5; border-radius: 16px; }
-.filter-btn.active { background: #1e293b; color: #fff; border-color: #1e293b; }
-.loading { text-align: center; color: #888; padding: 40px 0; }
-.list { display: flex; flex-direction: column; gap: 8px; }
-.item { background: #fff; border-radius: 8px; padding: 12px; }
-.item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.item-courier { font-size: 15px; font-weight: 600; }
-.status { padding: 2px 8px; border-radius: 12px; }
-.status-text { font-size: 11px; color: #fff; }
-.item-tracking { font-size: 13px; color: #333; display: block; margin-top: 4px; }
-.item-meta { display: flex; gap: 8px; margin-top: 4px; }
-.item-owner, .item-days { font-size: 12px; color: #888; }
-.item-actions { display: flex; gap: 8px; margin-top: 8px; }
-.btn-sm { font-size: 12px; padding: 4px 10px; background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; border-radius: 4px; }
-.btn-sm.primary { background: #1e293b; color: #fff; border-color: #1e293b; }
-.empty { text-align: center; color: #888; padding: 40px 0; }
+.page {
+  padding: 16px 20px;
+  padding-bottom: 80px;
+  background: var(--qwu-bg, #faf8f5);
+  min-height: 100vh;
+}
+.header {
+  margin-bottom: 16px;
+}
+.title {
+  font-size: 22px;
+  font-weight: 800;
+  display: block;
+  color: var(--qwu-text, #1c1917);
+  letter-spacing: -0.5px;
+}
+.subtitle {
+  font-size: 13px;
+  color: var(--qwu-text-muted, #a8a29e);
+  margin-top: 2px;
+  display: block;
+}
+.filter {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  font-size: 13px;
+  padding: 6px 14px;
+  background: var(--qwu-card, #ffffff);
+  color: var(--qwu-text-secondary, #78716c);
+  border: 1.5px solid var(--qwu-border, #e7e5e4);
+  border-radius: 20px;
+  font-weight: 500;
+}
+.filter-btn.active {
+  background: var(--qwu-primary, #f97316);
+  color: #fff;
+  border-color: var(--qwu-primary, #f97316);
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.25);
+}
+.loading {
+  text-align: center;
+  color: var(--qwu-text-muted, #a8a29e);
+  padding: 40px 0;
+  font-size: 14px;
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.item {
+  background: var(--qwu-card, #ffffff);
+  border-radius: var(--qwu-radius, 14px);
+  padding: 16px;
+  box-shadow: var(--qwu-shadow, 0 1px 3px rgba(28,25,23,0.06), 0 1px 2px rgba(28,25,23,0.04));
+}
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.item-courier {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--qwu-text, #1c1917);
+}
+.status {
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+.status-text {
+  font-size: 11px;
+  color: #fff;
+  font-weight: 600;
+}
+.item-tracking {
+  font-size: 13px;
+  color: var(--qwu-text-secondary, #78716c);
+  display: block;
+  margin-top: 4px;
+}
+.item-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.item-owner, .item-days {
+  font-size: 12px;
+  color: var(--qwu-text-muted, #a8a29e);
+}
+.item-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.btn-sm {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: var(--qwu-radius-xs, 6px);
+  font-weight: 500;
+  border: none;
+}
+.btn-warm {
+  background: var(--qwu-primary-light, #fff7ed);
+  color: var(--qwu-primary, #f97316);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+.btn-primary {
+  background: var(--qwu-primary, #f97316);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.25);
+}
+.empty {
+  text-align: center;
+  color: var(--qwu-text-muted, #a8a29e);
+  padding: 40px 0;
+  font-size: 14px;
+}
 </style>

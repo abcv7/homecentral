@@ -198,12 +198,12 @@ async function handleToggleReminder(item: ReminderRuleVO) {
       <view v-for="item in shoppingList" :key="item.id" class="list-item">
         <view class="item-row">
           <text class="item-name">{{ item.itemName }}</text>
-          <view :class="['badge', item.purchased ? 'done' : 'pending']">
+          <view :class="['badge', item.purchased ? 'badge-done' : 'badge-pending']">
             <text class="badge-text">{{ item.purchased ? '已购' : '待购' }}</text>
           </view>
         </view>
         <text v-if="item.note" class="item-note">{{ item.note }}</text>
-        <button class="btn-sm" @click="handleToggleShopping(item)">
+        <button class="btn-sm btn-warm" @click="handleToggleShopping(item)">
           {{ item.purchased ? '标记待购' : '标记已购' }}
         </button>
       </view>
@@ -229,13 +229,13 @@ async function handleToggleReminder(item: ReminderRuleVO) {
       <view v-for="item in reminderList" :key="item.id" class="list-item">
         <view class="item-row">
           <text class="item-name">{{ item.title }}</text>
-          <view :class="['badge', item.enabled ? 'done' : 'disabled']">
+          <view :class="['badge', item.enabled ? 'badge-done' : 'badge-disabled']">
             <text class="badge-text">{{ item.enabled ? '启用' : '禁用' }}</text>
           </view>
         </view>
         <text v-if="item.content" class="item-note">{{ item.content }}</text>
         <text v-if="item.cronExpression" class="item-meta">{{ item.cronExpression }}</text>
-        <button class="btn-sm" @click="handleToggleReminder(item)">
+        <button class="btn-sm btn-warm" @click="handleToggleReminder(item)">
           {{ item.enabled ? '禁用' : '启用' }}
         </button>
       </view>
@@ -319,38 +319,220 @@ async function handleToggleReminder(item: ReminderRuleVO) {
 </template>
 
 <style scoped>
-.page { padding: 16px; }
-.header { margin-bottom: 12px; }
-.title { font-size: 24px; font-weight: 700; display: block; }
-.tab-bar { display: flex; gap: 8px; margin-bottom: 16px; }
-.tab-btn { font-size: 13px; padding: 6px 14px; background: #f5f5f5; color: #333; border: 1px solid #e5e5e5; border-radius: 16px; }
-.tab-btn.active { background: #1e293b; color: #fff; border-color: #1e293b; }
-.loading { text-align: center; color: #888; padding: 40px 0; }
-.add-btn { font-size: 13px; padding: 8px 16px; background: #667eea; color: #fff; border: none; border-radius: 6px; margin-bottom: 12px; }
-.empty { text-align: center; color: #888; padding: 40px 0; }
-.tab-content { display: flex; flex-direction: column; gap: 8px; }
-.list-item { background: #fff; border-radius: 8px; padding: 12px; }
-.item-row { display: flex; justify-content: space-between; align-items: center; }
-.item-name { font-size: 15px; font-weight: 600; }
-.item-date { font-size: 13px; color: #666; }
-.item-note { font-size: 13px; color: #888; margin-top: 2px; display: block; }
-.item-meta { font-size: 12px; color: #888; margin-top: 2px; display: block; }
-.badge { padding: 2px 8px; border-radius: 10px; }
-.badge.done { background: #10b981; }
-.badge.pending { background: #f59e0b; }
-.badge.disabled { background: #d1d5db; }
-.badge-text { font-size: 11px; color: #fff; }
-.btn-sm { font-size: 12px; padding: 4px 10px; background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; border-radius: 4px; margin-top: 8px; }
-.modal-mask { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; display: flex; align-items: center; justify-content: center; }
-.modal-content { width: 85%; max-width: 380px; background: #fff; border-radius: 12px; padding: 24px; }
-.modal-title { display: block; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
-.form-item { margin-bottom: 12px; }
-.label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; }
-.input { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background: #fafafa; box-sizing: border-box; }
-.picker-display { padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa; font-size: 14px; color: #666; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
-.modal-btn { font-size: 14px; padding: 8px 16px; border-radius: 6px; }
-.modal-btn.cancel { background: #f5f5f5; color: #666; border: 1px solid #e5e5e5; }
-.modal-btn.primary { background: #667eea; color: #fff; border: none; }
-.modal-btn[disabled] { background: #b0b8d6; color: #fff; }
+.page {
+  padding: 16px 20px;
+  padding-bottom: 80px;
+  background: var(--qwu-bg, #faf8f5);
+  min-height: 100vh;
+}
+.header {
+  margin-bottom: 16px;
+}
+.title {
+  font-size: 22px;
+  font-weight: 800;
+  display: block;
+  color: var(--qwu-text, #1c1917);
+  letter-spacing: -0.5px;
+}
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.tab-btn {
+  font-size: 13px;
+  padding: 7px 16px;
+  background: var(--qwu-card, #ffffff);
+  color: var(--qwu-text-secondary, #78716c);
+  border: 1.5px solid var(--qwu-border, #e7e5e4);
+  border-radius: 20px;
+  font-weight: 500;
+}
+.tab-btn.active {
+  background: var(--qwu-primary, #f97316);
+  color: #fff;
+  border-color: var(--qwu-primary, #f97316);
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.25);
+}
+.loading {
+  text-align: center;
+  color: var(--qwu-text-muted, #a8a29e);
+  padding: 40px 0;
+  font-size: 14px;
+}
+.add-btn {
+  font-size: 13px;
+  padding: 9px 18px;
+  background: var(--qwu-primary, #f97316);
+  color: #fff;
+  border: none;
+  border-radius: var(--qwu-radius-sm, 10px);
+  margin-bottom: 14px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.25);
+}
+.empty {
+  text-align: center;
+  color: var(--qwu-text-muted, #a8a29e);
+  padding: 40px 0;
+  font-size: 14px;
+}
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.list-item {
+  background: var(--qwu-card, #ffffff);
+  border-radius: var(--qwu-radius, 14px);
+  padding: 16px;
+  box-shadow: var(--qwu-shadow, 0 1px 3px rgba(28,25,23,0.06), 0 1px 2px rgba(28,25,23,0.04));
+}
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--qwu-text, #1c1917);
+}
+.item-date {
+  font-size: 13px;
+  color: var(--qwu-text-secondary, #78716c);
+}
+.item-note {
+  font-size: 13px;
+  color: var(--qwu-text-secondary, #78716c);
+  margin-top: 4px;
+  display: block;
+}
+.item-meta {
+  font-size: 12px;
+  color: var(--qwu-text-muted, #a8a29e);
+  margin-top: 4px;
+  display: block;
+}
+.badge {
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+.badge-done {
+  background: var(--qwu-success, #10b981);
+}
+.badge-pending {
+  background: var(--qwu-warning, #f59e0b);
+}
+.badge-disabled {
+  background: var(--qwu-text-muted, #a8a29e);
+}
+.badge-text {
+  font-size: 11px;
+  color: #fff;
+  font-weight: 500;
+}
+.btn-sm {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: var(--qwu-radius-xs, 6px);
+  font-weight: 500;
+  border: none;
+  margin-top: 10px;
+}
+.btn-warm {
+  background: var(--qwu-primary-light, #fff7ed);
+  color: var(--qwu-primary, #f97316);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(28, 25, 23, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  width: 85%;
+  max-width: 380px;
+  background: var(--qwu-card, #ffffff);
+  border-radius: var(--qwu-radius, 14px);
+  padding: 24px;
+  box-shadow: var(--qwu-shadow-md, 0 4px 6px -1px rgba(28,25,23,0.07), 0 2px 4px -2px rgba(28,25,23,0.05));
+}
+.modal-title {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: var(--qwu-text, #1c1917);
+}
+.form-item {
+  margin-bottom: 14px;
+}
+.label {
+  display: block;
+  font-size: 13px;
+  color: var(--qwu-text-secondary, #78716c);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--qwu-border, #e7e5e4);
+  border-radius: var(--qwu-radius-xs, 6px);
+  font-size: 14px;
+  background: var(--qwu-bg, #faf8f5);
+  box-sizing: border-box;
+  color: var(--qwu-text, #1c1917);
+}
+.input:focus {
+  border-color: var(--qwu-primary, #f97316);
+  outline: none;
+}
+.picker-display {
+  padding: 10px 12px;
+  border: 1.5px solid var(--qwu-border, #e7e5e4);
+  border-radius: var(--qwu-radius-xs, 6px);
+  background: var(--qwu-bg, #faf8f5);
+  font-size: 14px;
+  color: var(--qwu-text-secondary, #78716c);
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+.modal-btn {
+  font-size: 14px;
+  padding: 9px 18px;
+  border-radius: var(--qwu-radius-sm, 10px);
+  font-weight: 500;
+}
+.modal-btn.cancel {
+  background: var(--qwu-bg, #faf8f5);
+  color: var(--qwu-text-secondary, #78716c);
+  border: 1.5px solid var(--qwu-border, #e7e5e4);
+}
+.modal-btn.primary {
+  background: var(--qwu-primary, #f97316);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.25);
+}
+.modal-btn[disabled] {
+  background: var(--qwu-border, #e7e5e4);
+  color: var(--qwu-text-muted, #a8a29e);
+  box-shadow: none;
+}
 </style>
