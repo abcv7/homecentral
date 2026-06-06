@@ -5,11 +5,43 @@
       "style": {
         "navigationBarTitleText": "冰箱"
       }
+    },
+    {
+      "path": "pages/parcel/index",
+      "style": {
+        "navigationBarTitleText": "驿站"
+      }
+    },
+    {
+      "path": "pages/workshop/index",
+      "style": {
+        "navigationBarTitleText": "调酒台"
+      }
     }
   ],
+  "tabBar": {
+    "color": "#7a7e83",
+    "selectedColor": "#1e293b",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/fridge/index",
+        "text": "冰箱"
+      },
+      {
+        "pagePath": "pages/parcel/index",
+        "text": "驿站"
+      },
+      {
+        "pagePath": "pages/workshop/index",
+        "text": "调酒台"
+      }
+    ]
+  },
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "HomeCentral POC",
+    "navigationBarTitleText": "HomeCentral",
     "navigationBarBackgroundColor": "#FFFFFF",
     "backgroundColor": "#F4F5F7"
   }
