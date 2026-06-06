@@ -1,15 +1,93 @@
 {
   "pages": [
     {
+      "path": "pages/login/index",
+      "style": {
+        "navigationBarTitleText": "登录",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/register/index",
+      "style": {
+        "navigationBarTitleText": "注册",
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/fridge/index",
       "style": {
         "navigationBarTitleText": "冰箱"
       }
+    },
+    {
+      "path": "pages/parcel/index",
+      "style": {
+        "navigationBarTitleText": "驿站"
+      }
+    },
+    {
+      "path": "pages/workshop/index",
+      "style": {
+        "navigationBarTitleText": "调酒台"
+      }
+    },
+    {
+      "path": "pages/life/index",
+      "style": {
+        "navigationBarTitleText": "生活备忘"
+      }
+    },
+    {
+      "path": "pages/friend/index",
+      "style": {
+        "navigationBarTitleText": "好友"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/notification/index",
+      "style": {
+        "navigationBarTitleText": "通知"
+      }
     }
   ],
+  "tabBar": {
+    "color": "#7a7e83",
+    "selectedColor": "#1e293b",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/fridge/index",
+        "text": "冰箱"
+      },
+      {
+        "pagePath": "pages/parcel/index",
+        "text": "驿站"
+      },
+      {
+        "pagePath": "pages/life/index",
+        "text": "生活"
+      },
+      {
+        "pagePath": "pages/friend/index",
+        "text": "好友"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  },
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "HomeCentral POC",
+    "navigationBarTitleText": "HomeCentral",
     "navigationBarBackgroundColor": "#FFFFFF",
     "backgroundColor": "#F4F5F7"
   }
