@@ -39,6 +39,10 @@
 /desktop-*.png
 /final-*.png
 /fridge-*.png
+/h5-*.png
+/mobile-*.png
+/modal-*.png
+/preview-*.png
 /[0-9][0-9]-*.png
 /[0-9][0-9][0-9]-*.png
 
