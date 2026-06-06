@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { NConfigProvider, darkTheme, type GlobalThemeOverrides } from 'naive-ui'
+import { computed, onMounted, onBeforeUnmount } from 'vue'
+import { NConfigProvider, darkTheme, useNotification, type GlobalThemeOverrides } from 'naive-ui'
 import { useTheme } from './composables/useTheme'
 
 const { resolved } = useTheme()
@@ -42,5 +42,51 @@ const themeOverrides = computed<GlobalThemeOverrides>(() => {
     }
   }
   return {}
+})
+
+// PWA：监听 SW 更新与离线就绪事件
+let notificationApi: ReturnType<typeof useNotification> | null = null
+
+function bindNotificationApi() {
+  // useNotification 必须在 n-notification-provider 子树内调用
+  // 顶层 setup 中暂不可用，等 router-view 挂载后再取
+  try {
+    notificationApi = useNotification()
+  } catch {}
+}
+
+function onNeedRefresh() {
+  if (!notificationApi) bindNotificationApi()
+  if (!notificationApi) return
+  notificationApi.create({
+    title: '🔄 有新版本可用',
+    content: '关闭应用后下次打开将自动应用最新版本',
+    type: 'info',
+    duration: 8000,
+    closable: true,
+  })
+}
+
+function onOfflineReady() {
+  if (!notificationApi) bindNotificationApi()
+  if (!notificationApi) return
+  notificationApi.create({
+    title: '📦 离线缓存已就绪',
+    content: '断网后仍可访问已缓存的页面',
+    type: 'success',
+    duration: 5000,
+    closable: true,
+  })
+}
+
+onMounted(() => {
+  bindNotificationApi()
+  window.addEventListener('pwa:need-refresh', onNeedRefresh)
+  window.addEventListener('pwa:offline-ready', onOfflineReady)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('pwa:need-refresh', onNeedRefresh)
+  window.removeEventListener('pwa:offline-ready', onOfflineReady)
 })
 </script>

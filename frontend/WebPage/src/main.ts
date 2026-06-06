@@ -23,3 +23,35 @@ app.use(naive)
 app.use(createPinia())
 app.use(router)
 app.mount('#app')
+
+// PWA：注册 Service Worker (autoUpdate) + 监听更新事件
+if ('serviceWorker' in navigator) {
+  import('virtual:pwa-register')
+    .then(({ registerSW }) => {
+      registerSW({
+        immediate: true,
+        onNeedRefresh() {
+          const ev = new CustomEvent('pwa:need-refresh')
+          window.dispatchEvent(ev)
+        },
+        onOfflineReady() {
+          const ev = new CustomEvent('pwa:offline-ready')
+          window.dispatchEvent(ev)
+        },
+        onRegisteredSW(_swUrl, registration) {
+          // 注册成功：30 分钟轮询一次检查更新
+          if (registration) {
+            setInterval(() => {
+              registration.update().catch(() => {})
+            }, 30 * 60 * 1000)
+          }
+        },
+        onRegisterError(err) {
+          console.warn('[PWA] SW register failed:', err)
+        },
+      })
+    })
+    .catch(() => {
+      // dev 模式或 vite-plugin-pwa 未启用时静默失败
+    })
+}
