@@ -1,0 +1,17 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@shared-stores/*": ["../WebPage/src/stores/*"],
+      "@shared-utils/*": ["../WebPage/src/utils/*"],
+      "@shared-api/*": ["../WebPage/src/api/*"],
+      "@shared-types/*": ["../WebPage/src/types/*"]
+    },
+    "lib": ["esnext", "dom"],
+    "types": ["@dcloudio/types"]
+  },
+  "include": ["src/**/*", "src/**/*.vue"]
+}
