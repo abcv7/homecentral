@@ -1,0 +1,11 @@
+# =============================================
+# 总配置入口（向后兼容）
+# 实际配置已迁移到 configs/ 目录（profile 化）
+# 此文件保留仅作向后兼容，新部署请直接用 configs/local.yml
+# =============================================
+
+spring:
+  config:
+    import:
+      - optional:file:configs/local.yml
+      - optional:file:configs/common.yml

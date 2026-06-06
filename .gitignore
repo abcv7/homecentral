@@ -18,6 +18,8 @@
 /backend/.claude/
 /backend/.codex/
 /backend/.repo/
+/backend/**/.repo/
+/backend/**/.m2/
 /backend/.serena/
 /backend/.idea/
 /backend/.mvn/jvm.config.bak
@@ -28,11 +30,26 @@
 /frontend/WebPage/.repo/
 /frontend/WebPage/.serena/
 /frontend/WebPage/.idea/
+/frontend/WebPage/.vscode/
 
 # ===== Screenshot noise (E2E / 视觉验证) =====
 /after-*.png
 /before-*.png
 /screenshot-*.png
+/desktop-*.png
+/final-*.png
+/fridge-*.png
+/[0-9][0-9]-*.png
+/[0-9][0-9][0-9]-*.png
+
+# ===== Backend tools (local scripts) =====
+/backend/mvn-project.cmd
+/backend/mvn-project.sh
+/backend/start-*.ps1
+/backend/opencode.json
+
+# ===== Tooling caches =====
+/environment/
 
 # ===== Backend build outputs =====
 /backend/**/target/

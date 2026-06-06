@@ -1,0 +1,20 @@
+# =============================================
+# 总配置 · 公共层（跨 profile 共享的固定项）
+# 切换环境时一般不需要改这里
+# =============================================
+
+# 各服务自己的 schema 名（跨 profile 一致）
+# 单个服务的 application-local.yml 会用 ${app.datasource.schema} 引用
+app:
+  datasource:
+    schema-prefix: home_    # 各服务 schema = home_auth / home_parcel / home_file / home_fridge / home_friend / home_life / home_notification
+
+# Spring AI 抽象（home-ai 模块专用）
+# 各 profile 复用同一组 key，但模型可单独覆盖
+spring:
+  ai:
+    openai:
+      base-url: https://api.siliconflow.cn/v1
+      chat:
+        options:
+          temperature: 0.1

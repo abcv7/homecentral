@@ -1,0 +1,84 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: homecentral-postgres
+    environment:
+      POSTGRES_DB: homecentral
+      POSTGRES_USER: homecentral
+      POSTGRES_PASSWORD: homecentral123
+    ports:
+      - "65432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U homecentral -d homecentral"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7.4
+    container_name: homecentral-redis
+    ports:
+      - "16379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: homecentral-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: homecentral
+      RABBITMQ_DEFAULT_PASS: homecentral123
+    ports:
+      - "15672:5672"
+      - "25672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: homecentral-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: homecentral
+      MINIO_ROOT_PASSWORD: homecentral123
+    ports:
+      - "19000:9000"
+      - "19001:9001"
+    volumes:
+      - minio-data:/data
+
+  nacos:
+    image: nacos/nacos-server:v3.2.0
+    container_name: homecentral-nacos
+    environment:
+      MODE: standalone
+      NACOS_AUTH_ENABLE: "true"
+      NACOS_AUTH_IDENTITY_KEY: homecentral
+      NACOS_AUTH_IDENTITY_VALUE: homecentral
+      NACOS_AUTH_TOKEN: 0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz
+      PREFER_HOST_MODE: hostname
+    ports:
+      - "18081:8848"
+      - "19848:9848"
+
+volumes:
+  postgres-data:
+  redis-data:
+  rabbitmq-data:
+  minio-data:

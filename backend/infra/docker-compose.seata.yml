@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  seata-server:
+    build:
+      context: ../../environment/seata-server
+      dockerfile: Dockerfile
+    image: homecentral-seata-server:2.6.0
+    container_name: homecentral-seata
+    ports:
+      - "18091:8091"
+    environment:
+      - TZ=Asia/Shanghai
+      - JVM_XMX=1024m
+      - JVM_XMS=1024m
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      - homecentral-net
+    restart: unless-stopped
+
+networks:
+  homecentral-net:
+    driver: bridge
