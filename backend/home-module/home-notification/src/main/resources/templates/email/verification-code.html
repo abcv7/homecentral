@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>栖物集 - {{purposeBadge}}</title>
+</head>
+<body style="margin:0;padding:0;background:#fff7ed;font-family:'PingFang SC','Microsoft YaHei',Helvetica,Arial,sans-serif;color:#1f2937;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#fff7ed;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(249,115,22,0.08);">
+
+          <tr>
+            <td style="background:linear-gradient(135deg,#fbbf24 0%,#f97316 100%);padding:32px 40px 28px 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td>
+                    <span style="display:inline-block;background:rgba(255,255,255,0.22);color:#ffffff;font-size:12px;letter-spacing:2px;padding:6px 14px;border-radius:999px;font-weight:600;">
+                      🏠&nbsp;栖物集&nbsp;·&nbsp;HOME&nbsp;CENTRAL
+                    </span>
+                  </td>
+                </tr>
+                <tr><td style="height:20px;line-height:20px;font-size:0;">&nbsp;</td></tr>
+                <tr>
+                  <td style="color:#ffffff;font-size:26px;font-weight:700;line-height:1.4;">
+                    验证码已送达
+                  </td>
+                </tr>
+                <tr>
+                  <td style="color:rgba(255,255,255,0.92);font-size:14px;line-height:1.6;padding-top:8px;">
+                    您正在进行 <b>{{purposeText}}</b>，请使用下方验证码完成本次操作。
+                  </td>
+                </tr>
+                <tr><td style="height:8px;line-height:8px;font-size:0;">&nbsp;</td></tr>
+                <tr>
+                  <td>
+                    <span style="display:inline-block;background:#ffffff;color:#f97316;font-size:13px;font-weight:600;padding:6px 14px;border-radius:999px;">
+                      {{purposeBadge}}
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:32px 40px 8px 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#fffaf2;border:1px solid #fed7aa;border-radius:12px;">
+                <tr>
+                  <td style="padding:24px 24px 20px 24px;">
+                    <div style="color:#9ca3af;font-size:12px;letter-spacing:3px;font-weight:600;">
+                      VERIFICATION&nbsp;CODE
+                    </div>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px;">
+                      <tr>
+                        {{codeBoxes}}
+                      </tr>
+                    </table>
+                    <div style="color:#6b7280;font-size:13px;line-height:1.6;padding-top:18px;text-align:center;">
+                      请在 <b style="color:#f97316;">{{minutes}}&nbsp;分钟</b> 内完成输入，验证码仅限本次使用。
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:24px 40px 8px 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#fff7ed;border-radius:10px;">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <div style="color:#f97316;font-size:13px;font-weight:600;">接收邮箱</div>
+                    <div style="color:#1f2937;font-size:15px;padding-top:6px;">{{email}}</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:24px 40px 8px 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#fff7ed;border-radius:10px;">
+                <tr>
+                  <td style="padding:20px 24px;">
+                    <div style="color:#1f2937;font-size:14px;font-weight:700;padding-bottom:10px;">安全提醒</div>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td width="22" valign="top" style="color:#f97316;font-weight:700;font-size:13px;line-height:1.7;">①</td>
+                        <td style="color:#4b5563;font-size:13px;line-height:1.7;padding-bottom:6px;">
+                          验证码仅用于本次 <b>{{purposeText}}</b>，请勿转发或泄露给任何人。
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="22" valign="top" style="color:#f97316;font-weight:700;font-size:13px;line-height:1.7;">②</td>
+                        <td style="color:#4b5563;font-size:13px;line-height:1.7;padding-bottom:6px;">
+                          如不是您的操作，可直接忽略本邮件，账号仍然是安全的。
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="22" valign="top" style="color:#f97316;font-weight:700;font-size:13px;line-height:1.7;">③</td>
+                        <td style="color:#4b5563;font-size:13px;line-height:1.7;">
+                          如需继续操作，请返回 <b>栖物集</b> 应用或网页端完成验证。
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:24px 40px 28px 40px;text-align:center;">
+              <div style="color:#9ca3af;font-size:12px;line-height:1.6;">
+                此邮件由 <b style="color:#6b7280;">栖物集</b> 自动发送，请勿直接回复。
+              </div>
+              <div style="color:#d1d5db;font-size:11px;padding-top:4px;">
+                © {{year}} 栖物集 · 您的家庭数字中枢
+              </div>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
