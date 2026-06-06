@@ -1,3 +1,4 @@
+/* ======== H5 reset ======== */
 *,
 *::before,
 *::after {
@@ -18,6 +19,7 @@ html {
   text-size-adjust: 100%;
   overscroll-behavior-y: contain;
   scroll-behavior: smooth;
+  color-scheme: light dark;
 }
 
 body {
@@ -25,11 +27,12 @@ body {
     'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
   font-size: 14px;
   line-height: 1.5;
-  color: #1e293b;
-  background: #f8fafc;
+  color: var(--text-1);
+  background: var(--bg-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior: contain;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 button,
@@ -70,7 +73,21 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-:root {
+/* ======== Theme CSS vars ======== */
+:root,
+[data-theme='light'] {
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: #f1f5f9;
+  --text-1: #1e293b;
+  --text-2: #64748b;
+  --text-3: #94a3b8;
+  --text-inverse: #ffffff;
+  --border-1: #e2e8f0;
+  --border-2: #f1f5f9;
+  --accent-1: #667eea;
+  --shadow-1: 0 1px 0 rgba(15, 23, 42, 0.04);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
@@ -79,8 +96,26 @@ input::-webkit-inner-spin-button {
   --h5-content-pad: 12px;
 }
 
+[data-theme='dark'] {
+  --bg-base: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-elevated: #334155;
+  --bg-hover: #1e293b;
+  --text-1: #f1f5f9;
+  --text-2: #cbd5e1;
+  --text-3: #94a3b8;
+  --text-inverse: #0f172a;
+  --border-1: #334155;
+  --border-2: #475569;
+  --accent-1: #818cf8;
+  --shadow-1: 0 1px 0 rgba(0, 0, 0, 0.2);
+  color-scheme: dark;
+}
+
 @media (min-width: 768px) {
-  :root {
+  :root,
+  [data-theme='light'],
+  [data-theme='dark'] {
     --h5-content-pad: 24px;
   }
 }
@@ -90,4 +125,10 @@ input::-webkit-inner-spin-button {
 }
 .h5-hide-scrollbar {
   scrollbar-width: none;
+}
+
+/* ======== Naive UI 暗色微调 ======== */
+[data-theme='dark'] {
+  /* 让 Naive UI 的 tooltip / dropdown 等在暗色下边框更柔和 */
+  --n-border-color: rgba(241, 245, 249, 0.15);
 }

@@ -135,7 +135,7 @@ function onDelete() {
 .sheet-handle {
   width: 40px;
   height: 4px;
-  background: #e2e8f0;
+  background: var(--border-1);
   border-radius: 999px;
   margin: 4px auto 4px;
 }
@@ -144,7 +144,7 @@ function onDelete() {
   align-items: center;
   gap: 12px;
   padding: 4px 4px 8px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-2);
 }
 .sheet-head .emoji {
   font-size: 36px;
@@ -153,7 +153,7 @@ function onDelete() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
+  background: var(--bg-hover);
   border-radius: 14px;
 }
 .sheet-head .meta {
@@ -165,14 +165,14 @@ function onDelete() {
 .sheet-head .name {
   font-size: 17px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-1);
 }
 .sheet-head .sub {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-2);
   flex-wrap: wrap;
 }
 .sheet-head .sub .qty {
@@ -183,9 +183,10 @@ function onDelete() {
   background: #fef3c7;
   color: #b45309;
 }
+[data-theme='dark'] .sheet-head .sub .qty { background: #422006; color: #fcd34d; }
 .sheet-head .sub .loc {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--text-3);
 }
 .sheet-actions {
   display: flex;
@@ -194,8 +195,8 @@ function onDelete() {
 }
 .sheet-action {
   appearance: none;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-1);
   border-radius: 14px;
   padding: 14px 16px;
   display: grid;
@@ -207,7 +208,7 @@ function onDelete() {
   transition: background 0.15s, border-color 0.15s;
 }
 .sheet-action:active {
-  background: #f1f5f9;
+  background: var(--bg-hover);
 }
 .sheet-action:disabled {
   opacity: 0.45;
@@ -217,14 +218,18 @@ function onDelete() {
   border-color: #fecaca;
   background: #fff7f7;
 }
+[data-theme='dark'] .sheet-action.danger {
+  border-color: #7f1d1d;
+  background: #2a0a0a;
+}
 .sheet-action .lbl {
   font-size: 15px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-1);
 }
 .sheet-action .hint {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--text-3);
   font-weight: 500;
   text-align: right;
 }

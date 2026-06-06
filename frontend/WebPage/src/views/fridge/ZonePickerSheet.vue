@@ -191,7 +191,7 @@ function onConfirm() {
 .sheet-handle {
   width: 40px;
   height: 4px;
-  background: #e2e8f0;
+  background: var(--border-1);
   border-radius: 999px;
   margin: 4px auto 4px;
 }
@@ -204,7 +204,7 @@ function onConfirm() {
 .picker-head h3 {
   font-size: 17px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-1);
   margin: 0;
 }
 .picker-item {
@@ -212,22 +212,22 @@ function onConfirm() {
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  background: #f8fafc;
+  background: var(--bg-hover);
   border-radius: 12px;
   font-size: 13px;
-  color: #475569;
+  color: var(--text-2);
 }
 .picker-item .emoji {
   font-size: 24px;
 }
 .picker-item .name {
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-1);
   flex: 1;
 }
 .picker-item .current-loc {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--text-3);
 }
 
 .zone-row {
@@ -237,8 +237,8 @@ function onConfirm() {
 }
 .zone-pill {
   appearance: none;
-  background: #fff;
-  border: 1.5px solid #e2e8f0;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-1);
   border-radius: 12px;
   padding: 12px 8px;
   display: flex;
@@ -247,7 +247,7 @@ function onConfirm() {
   gap: 4px;
   font-size: 13px;
   font-weight: 700;
-  color: #475569;
+  color: var(--text-2);
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -258,6 +258,11 @@ function onConfirm() {
   border-color: #f97316;
   background: #fff7ed;
   color: #c2410c;
+}
+[data-theme='dark'] .zone-pill.active {
+  background: #2a1106;
+  color: #fdba74;
+  border-color: #ea580c;
 }
 .zone-pill:active {
   transform: scale(0.97);
@@ -270,8 +275,8 @@ function onConfirm() {
 }
 .layer-btn {
   appearance: none;
-  background: #fff;
-  border: 1.5px solid #e2e8f0;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-1);
   border-radius: 10px;
   padding: 10px 6px;
   display: flex;
@@ -280,26 +285,34 @@ function onConfirm() {
   gap: 2px;
   font-size: 12px;
   font-weight: 700;
-  color: #475569;
+  color: var(--text-2);
   cursor: pointer;
   transition: all 0.15s;
 }
 .layer-btn .lbl {
   font-size: 14px;
-  color: #1e293b;
+  color: var(--text-1);
 }
 .layer-btn .hint {
   font-size: 10px;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-3);
 }
 .layer-btn.active {
   border-color: #3b82f6;
   background: #eff6ff;
   color: #1d4ed8;
 }
+[data-theme='dark'] .layer-btn.active {
+  background: #0c1e3e;
+  color: #93c5fd;
+  border-color: #3b82f6;
+}
 .layer-btn.active .lbl {
   color: #1d4ed8;
+}
+[data-theme='dark'] .layer-btn.active .lbl {
+  color: #93c5fd;
 }
 .layer-btn:active {
   transform: scale(0.97);
@@ -307,7 +320,7 @@ function onConfirm() {
 
 .tip {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--text-3);
   margin: 4px 4px 0;
 }
 </style>

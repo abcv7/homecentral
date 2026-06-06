@@ -115,15 +115,18 @@ function expiryClass(days: number) {
 
 <style scoped>
 .basket {
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 20px;
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-2);
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 14px;
   min-height: 480px;
+}
+[data-theme='dark'] .basket {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 .basket.is-mobile {
   min-height: 0;
@@ -160,7 +163,7 @@ function expiryClass(days: number) {
 .title {
   font-size: 15px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-1);
 }
 .subtitle {
   font-size: 11px;
@@ -169,8 +172,8 @@ function expiryClass(days: number) {
 }
 .basket-drop {
   flex: 1;
-  background: #f8fafc;
-  border: 2px dashed #e2e8f0;
+  background: var(--bg-hover);
+  border: 2px dashed var(--border-1);
   border-radius: 16px;
   padding: 14px;
   min-height: 360px;
@@ -188,13 +191,17 @@ function expiryClass(days: number) {
   background: #fff7ed;
   border-color: #f97316;
 }
+[data-theme='dark'] .basket-drop.is-over {
+  background: #2a1106;
+  border-color: #ea580c;
+}
 .empty {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: var(--text-3);
   text-align: center;
   gap: 6px;
   font-size: 12px;
@@ -218,12 +225,12 @@ function expiryClass(days: number) {
   align-items: center;
   gap: 4px;
   padding: 6px 10px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 999px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-1);
   font-size: 12px;
   font-weight: 600;
-  color: #334155;
+  color: var(--text-1);
   cursor: grab;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
   transition: transform 0.15s, box-shadow 0.15s;
@@ -233,13 +240,13 @@ function expiryClass(days: number) {
   border-radius: 12px;
   padding: 10px 12px;
   font-size: 13px;
-  background: #fff;
+  background: var(--bg-surface);
   gap: 6px;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 .basket.is-mobile .chip.mobile-tap:active {
   transform: scale(0.98);
-  background: #f8fafc;
+  background: var(--bg-hover);
 }
 .chip:hover {
   transform: translateY(-1px);

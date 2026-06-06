@@ -86,10 +86,10 @@ function formatTime(iso?: string) {
 
 <style scoped>
 .history {
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: 20px;
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-2);
   padding: 18px;
   display: flex;
   flex-direction: column;
@@ -98,6 +98,9 @@ function formatTime(iso?: string) {
   max-height: calc(100vh - 240px);
   position: sticky;
   top: 16px;
+}
+[data-theme='dark'] .history {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 .history.is-mobile {
   background: transparent;
@@ -136,11 +139,11 @@ function formatTime(iso?: string) {
 .title {
   font-size: 15px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-1);
 }
 .subtitle {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--text-3);
   margin-top: 2px;
 }
 .history-list {
@@ -174,8 +177,8 @@ function formatTime(iso?: string) {
   line-height: 1.5;
 }
 .batch-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-hover);
+  border: 1px solid var(--border-1);
   border-radius: 12px;
   padding: 12px;
   cursor: pointer;
@@ -187,6 +190,9 @@ function formatTime(iso?: string) {
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(14, 165, 233, 0.1);
 }
+[data-theme='dark'] .batch-card:hover {
+  background: #0c2a47;
+}
 .batch-head {
   display: flex;
   align-items: center;
@@ -196,7 +202,8 @@ function formatTime(iso?: string) {
 .batch-time {
   font-size: 12px;
   font-weight: 700;
-  color: #334155;
+  color: var(--text-1);
+  opacity: 0.8;
 }
 .batch-items {
   display: flex;
@@ -208,7 +215,7 @@ function formatTime(iso?: string) {
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #1e293b;
+  color: var(--text-1);
 }
 .batch-item .emoji {
   font-size: 14px;
@@ -224,6 +231,10 @@ function formatTime(iso?: string) {
   font-weight: 700;
   background: #fef3c7;
   color: #b45309;
+}
+[data-theme='dark'] .batch-item .qty {
+  background: #422006;
+  color: #fcd34d;
 }
 .batch-more {
   font-size: 11px;

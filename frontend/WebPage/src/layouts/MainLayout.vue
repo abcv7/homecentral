@@ -29,13 +29,27 @@
       <n-layout-header bordered class="layout-header">
         <n-space align="center" justify="space-between" style="height:100%;padding:0 20px;">
           <span class="header-title">{{ currentTitle }}</span>
-          <n-dropdown trigger="hover" :options="userMenuOptions" @select="handleUserMenu">
-            <n-button quaternary class="user-button">
-              <template #icon><n-icon><person-outline /></n-icon></template>
-              <span v-if="isDesktop" class="user-name">{{ authStore.username }}</span>
-              <span v-else>{{ authStore.username?.charAt(0) ?? 'U' }}</span>
-            </n-button>
-          </n-dropdown>
+          <n-space align="center" :size="8">
+            <n-tooltip :show-arrow="true">
+              <template #trigger>
+                <n-button quaternary circle class="theme-btn" @click="cycleTheme" aria-label="切换主题">
+                  <n-icon size="20">
+                    <SunnyOutline v-if="themeMode === 'light'" />
+                    <MoonOutline v-else-if="themeMode === 'dark'" />
+                    <DesktopOutline v-else />
+                  </n-icon>
+                </n-button>
+              </template>
+              主题：{{ themeModeLabel }}
+            </n-tooltip>
+            <n-dropdown trigger="hover" :options="userMenuOptions" @select="handleUserMenu">
+              <n-button quaternary class="user-button">
+                <template #icon><n-icon><person-outline /></n-icon></template>
+                <span v-if="isDesktop" class="user-name">{{ authStore.username }}</span>
+                <span v-else>{{ authStore.username?.charAt(0) ?? 'U' }}</span>
+              </n-button>
+            </n-dropdown>
+          </n-space>
         </n-space>
       </n-layout-header>
       <n-layout-content :class="isTablet ? 'layout-content layout-content--tablet' : 'layout-content'">
@@ -51,11 +65,20 @@
         <n-icon size="22"><menu-outline /></n-icon>
       </n-button>
       <span class="mobile-title">{{ currentTitle }}</span>
-      <n-dropdown trigger="click" :options="userMenuOptions" @select="handleUserMenu">
-        <n-button quaternary size="large" class="mobile-user" aria-label="用户">
-          <n-icon size="20"><person-outline /></n-icon>
+      <n-space :size="0" align="center">
+        <n-button quaternary size="large" class="mobile-theme" @click="cycleTheme" aria-label="切换主题">
+          <n-icon size="20">
+            <SunnyOutline v-if="themeMode === 'light'" />
+            <MoonOutline v-else-if="themeMode === 'dark'" />
+            <DesktopOutline v-else />
+          </n-icon>
         </n-button>
-      </n-dropdown>
+        <n-dropdown trigger="click" :options="userMenuOptions" @select="handleUserMenu">
+          <n-button quaternary size="large" class="mobile-user" aria-label="用户">
+            <n-icon size="20"><person-outline /></n-icon>
+          </n-button>
+        </n-dropdown>
+      </n-space>
     </header>
 
     <main class="mobile-content">
@@ -81,25 +104,34 @@
 <script setup lang="ts">
 import { ref, computed, h, type Component } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { NIcon, NButton, NDropdown, NDrawer, NDrawerContent } from 'naive-ui'
+import { NIcon, NButton, NDropdown, NDrawer, NDrawerContent, NTooltip, NSpace } from 'naive-ui'
 import {
   PersonOutline, GridOutline, CubeOutline, HeartOutline,
   NotificationsOutline, SnowOutline, PeopleOutline, SettingsOutline,
-  MenuOutline,
+  MenuOutline, SunnyOutline, MoonOutline, DesktopOutline,
 } from '@vicons/ionicons5'
 import { useAuthStore } from '../stores/auth'
 import { useBreakpoint } from '../composables/useBreakpoint'
+import { useTheme } from '../composables/useTheme'
 import type { MenuOption } from 'naive-ui'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const { isTablet, isDesktop } = useBreakpoint()
+const { mode: themeModeRef, cycleMode: cycleTheme } = useTheme()
 
 const siderCollapsed = ref(false)
 const drawerShow = ref(false)
 
 const currentTitle = computed(() => route.meta?.title ?? '')
+
+// themeModeRef 是 readonly ref，computed 解包后用于模板渲染
+const themeMode = computed(() => themeModeRef.value)
+const themeModeLabel = computed(() => {
+  const m = themeModeRef.value
+  return m === 'light' ? '浅色' : m === 'dark' ? '深色' : '跟随系统'
+})
 
 const activeKey = computed(() => route.path)
 
@@ -157,7 +189,7 @@ function handleUserMenu(key: string) {
 }
 .layout-header {
   height: 56px;
-  background: #fff;
+  background: var(--bg-surface);
 }
 .header-title {
   font-size: 16px;
@@ -174,10 +206,15 @@ function handleUserMenu(key: string) {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 .layout-content {
   padding: var(--h5-content-pad);
   min-height: calc(100vh - 56px);
-  background: #f8fafc;
+  background: var(--bg-base);
 }
 .layout-content--tablet {
   padding: 16px;
@@ -189,7 +226,7 @@ function handleUserMenu(key: string) {
   flex-direction: column;
   height: 100%;
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--bg-base);
 }
 .mobile-header {
   position: sticky;
@@ -200,12 +237,13 @@ function handleUserMenu(key: string) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-1);
+  box-shadow: var(--shadow-1);
 }
 .hamburger,
-.mobile-user {
+.mobile-user,
+.mobile-theme {
   width: 48px;
   height: 48px;
 }
@@ -214,7 +252,7 @@ function handleUserMenu(key: string) {
   text-align: center;
   font-size: 16px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-1);
   padding-right: 48px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -230,7 +268,7 @@ function handleUserMenu(key: string) {
   display: flex;
   align-items: center;
   padding: 0 18px;
-  border-bottom: 1px solid #f1f5f9;
-  background: linear-gradient(135deg, #fff, #f8fafc);
+  border-bottom: 1px solid var(--border-2);
+  background: var(--bg-surface);
 }
 </style>
