@@ -98,6 +98,17 @@ export interface SharedParcelUserVO {
   sharedAt: string | null
 }
 
+export interface ApiAccountVO {
+  id: number | null
+  userId: number | null
+  provider: string
+  apiKeyMasked: string | null
+  customer: string | null
+  enabled: boolean | null
+  createdAt: string | null
+  updatedAt: string | null
+}
+
 export interface ParcelCreateRequest {
   courierCompany: string
   trackingNumber: string

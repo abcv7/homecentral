@@ -356,13 +356,14 @@ class ParcelServiceImplTest {
     void shouldQueryAliyunForValidTrackingNumber() {
         Parcel parcel = createParcel(1L, "PENDING_PICKUP");
         parcel.setTrackingNumber("SF1234567890");
+        parcel.setCreatedBy(1L);
         when(parcelMapper.selectById(1L)).thenReturn(parcel);
-        when(aliyunExpressService.queryWithDiscern("SF1234567890", null))
+        when(aliyunExpressService.queryWithDiscern("SF1234567890", null, 1L))
                 .thenReturn(new TrackingVO());
 
         parcelService.queryTracking(1L);
 
-        verify(aliyunExpressService).queryWithDiscern("SF1234567890", null);
+        verify(aliyunExpressService).queryWithDiscern("SF1234567890", null, 1L);
     }
 
     @Test

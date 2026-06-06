@@ -3,9 +3,9 @@ package com.homecentral.parcel.tracking;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.homecentral.parcel.api.vo.TrackingVO;
+import com.homecentral.parcel.service.IApiAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -24,45 +24,58 @@ public class AliyunExpressService {
     private static final Logger log = LoggerFactory.getLogger(AliyunExpressService.class);
 
     private static final String BASE_URL = "https://jmexpresv2.market.alicloudapi.com";
+    private static final String PROVIDER_ALIYUN_EXPRESS = "ALIYUN_EXPRESS";
 
     private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ZoneId TZ_SHANGHAI = ZoneId.of("Asia/Shanghai");
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private final String appcode;
+    private final IApiAccountService apiAccountService;
 
     public AliyunExpressService(RestTemplate restTemplate, ObjectMapper objectMapper,
-                                 @Value("${app.aliyun.express.appcode:}") String appcode) {
+                                 IApiAccountService apiAccountService) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
-        this.appcode = appcode;
+        this.apiAccountService = apiAccountService;
     }
 
     public TrackingVO autoQuery(String trackingNumber, String phone) {
-        return queryWithDiscern(trackingNumber, phone);
+        return autoQuery(trackingNumber, phone, null);
+    }
+
+    public TrackingVO autoQuery(String trackingNumber, String phone, Long userId) {
+        return queryWithDiscern(trackingNumber, phone, userId);
     }
 
     public TrackingVO queryByNumber(String trackingNumber, String courierCode, String phone) {
-        return doQuery(trackingNumber, courierCode, phone);
+        return queryByNumber(trackingNumber, courierCode, phone, null);
+    }
+
+    public TrackingVO queryByNumber(String trackingNumber, String courierCode, String phone, Long userId) {
+        return doQuery(trackingNumber, courierCode, phone, userId);
     }
 
     public TrackingVO queryWithDiscern(String trackingNumber, String phone) {
+        return queryWithDiscern(trackingNumber, phone, null);
+    }
+
+    public TrackingVO queryWithDiscern(String trackingNumber, String phone, Long userId) {
         try {
-            String expressCode = discernExpressCode(trackingNumber);
+            String expressCode = discernExpressCode(trackingNumber, userId);
             if (expressCode != null) {
                 log.info("Discerned {} -> courier={}", trackingNumber, expressCode);
-                return doQuery(trackingNumber, expressCode, phone);
+                return doQuery(trackingNumber, expressCode, phone, userId);
             }
             log.warn("Discern failed for {}, fallback to auto-recognize", trackingNumber);
         } catch (Exception e) {
             log.warn("Discern error for {}, fallback to auto-recognize", trackingNumber, e);
         }
-        return doQuery(trackingNumber, null, phone);
+        return doQuery(trackingNumber, null, phone, userId);
     }
 
-    private String discernExpressCode(String trackingNumber) {
-        JsonNode root = callAliyunApiRaw("/express/number-discern", trackingNumber, null, null);
+    private String discernExpressCode(String trackingNumber, Long userId) {
+        JsonNode root = callAliyunApiRaw("/express/number-discern", trackingNumber, null, null, userId);
         if (root == null) return null;
         int code = root.get("code").asInt();
         if (code != 200) return null;
@@ -75,11 +88,11 @@ public class AliyunExpressService {
         return first.get("expressCode").asText();
     }
 
-    private TrackingVO doQuery(String trackingNumber, String courierCode, String phone) {
+    private TrackingVO doQuery(String trackingNumber, String courierCode, String phone, Long userId) {
         TrackingVO vo = new TrackingVO();
         vo.setTrackingNumber(trackingNumber);
         try {
-            JsonNode data = callAliyunApi("/express/query-v2", trackingNumber, courierCode, phone);
+            JsonNode data = callAliyunApi("/express/query-v2", trackingNumber, courierCode, phone, userId);
             if (data == null) {
                 vo.setMessage("无数据");
                 vo.setState("unknown");
@@ -121,13 +134,13 @@ public class AliyunExpressService {
     }
 
     public JsonNode numberDiscern(String trackingNumber) {
-        return callAliyunApiRaw("/express/number-discern", trackingNumber, null, null);
+        return callAliyunApiRaw("/express/number-discern", trackingNumber, null, null, null);
     }
 
     public JsonNode queryOutlets(String shipperCode, String provinceName, String cityName,
                                   String areaName, String address) {
         try {
-            HttpHeaders headers = buildHeaders();
+            HttpHeaders headers = buildHeaders(null);
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             body.add("shipperCode", shipperCode);
             body.add("provinceName", provinceName);
@@ -150,8 +163,8 @@ public class AliyunExpressService {
         }
     }
 
-    private JsonNode callAliyunApi(String path, String trackingNumber, String courierCode, String phone) {
-        JsonNode root = callAliyunApiRaw(path, trackingNumber, courierCode, phone);
+    private JsonNode callAliyunApi(String path, String trackingNumber, String courierCode, String phone, Long userId) {
+        JsonNode root = callAliyunApiRaw(path, trackingNumber, courierCode, phone, userId);
         if (root == null) return null;
         int code = root.get("code").asInt();
         if (code != 200) {
@@ -164,9 +177,9 @@ public class AliyunExpressService {
         return data;
     }
 
-    private JsonNode callAliyunApiRaw(String path, String trackingNumber, String courierCode, String phone) {
+    private JsonNode callAliyunApiRaw(String path, String trackingNumber, String courierCode, String phone, Long userId) {
         try {
-            HttpHeaders headers = buildHeaders();
+            HttpHeaders headers = buildHeaders(userId);
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             body.add("number", trackingNumber);
             body.add("sort", "desc");
@@ -182,7 +195,7 @@ public class AliyunExpressService {
                 new HttpEntity<>(body, headers), String.class);
 
             String resp = response.getBody();
-            log.info("AliyunAPI {} {}: HTTP {}, body={}", path, trackingNumber,
+            log.info("AliyunAPI {} {} (userId={}): HTTP {}, body={}", path, trackingNumber, userId,
                      response.getStatusCode().value(),
                      resp != null ? resp.substring(0, Math.min(resp.length(), 500)) : "null");
 
@@ -194,9 +207,10 @@ public class AliyunExpressService {
         }
     }
 
-    private HttpHeaders buildHeaders() {
+    private HttpHeaders buildHeaders(Long userId) {
+        String resolved = apiAccountService.resolveAppcode(userId, PROVIDER_ALIYUN_EXPRESS);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "APPCODE " + appcode);
+        headers.set("Authorization", "APPCODE " + (resolved == null ? "" : resolved));
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         return headers;
     }

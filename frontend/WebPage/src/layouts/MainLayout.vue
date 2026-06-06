@@ -109,6 +109,7 @@ import {
   PersonOutline, GridOutline, CubeOutline, HeartOutline,
   NotificationsOutline, SnowOutline, PeopleOutline, SettingsOutline,
   MenuOutline, SunnyOutline, MoonOutline, DesktopOutline,
+  WineOutline, OptionsOutline,
 } from '@vicons/ionicons5'
 import { useAuthStore } from '../stores/auth'
 import { useBreakpoint } from '../composables/useBreakpoint'
@@ -146,11 +147,14 @@ const menuOptions: MenuOption[] = [
   { label: '通知中心', key: '/notification', icon: renderIcon(NotificationsOutline) },
   { label: '好友与分组', key: '/friend', icon: renderIcon(PeopleOutline) },
   { label: '冰箱食材', key: '/fridge', icon: renderIcon(SnowOutline) },
+  { label: '调酒台', key: '/workshop', icon: renderIcon(WineOutline) },
+  { label: '系统设置', key: '/settings', icon: renderIcon(OptionsOutline) },
   { label: '个人资料', key: '/profile', icon: renderIcon(SettingsOutline) },
 ]
 
 const userMenuOptions = [
   { label: '个人资料', key: 'profile', icon: renderIcon(PersonOutline) },
+  { label: '系统设置', key: 'settings', icon: renderIcon(OptionsOutline) },
   { label: '退出登录', key: 'logout' },
 ]
 
@@ -165,6 +169,8 @@ function handleUserMenu(key: string) {
     router.push('/login')
   } else if (key === 'profile') {
     router.push('/profile')
+  } else if (key === 'settings') {
+    router.push('/settings')
   }
 }
 </script>

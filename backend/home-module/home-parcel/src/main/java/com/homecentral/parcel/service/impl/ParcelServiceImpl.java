@@ -398,7 +398,7 @@ public class ParcelServiceImpl implements IParcelService {
             }
         }
 
-        TrackingVO tracking = aliyunExpressService.queryWithDiscern(trackingNumber, phoneTail);
+        TrackingVO tracking = aliyunExpressService.queryWithDiscern(trackingNumber, phoneTail, parcel.getCreatedBy());
 
         syncParcelFromTracking(parcel, tracking);
 

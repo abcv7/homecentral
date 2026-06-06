@@ -122,18 +122,20 @@ public class ParcelController {
     @Operation(summary = "自动识别查询", description = "自动识别快递公司并查询物流信息")
     @GetMapping("/tracking/auto-com")
     public Result<TrackingVO> autoComplete(@RequestParam String trackingNumber,
-                                            @RequestParam(required = false) String phone) {
-        return Result.ok(aliyunExpressService.queryWithDiscern(trackingNumber, phone));
+                                            @RequestParam(required = false) String phone,
+                                            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+        return Result.ok(aliyunExpressService.queryWithDiscern(trackingNumber, phone, userId));
     }
 
     @Operation(summary = "按单号查询", description = "指定快递公司查询物流轨迹")
     @GetMapping("/tracking/query")
     public Result<TrackingVO> queryTrackingByNumber(@RequestParam String trackingNumber,
                                                      @RequestParam(required = false) String courierCode,
-                                                     @RequestParam(required = false) String phone) {
+                                                     @RequestParam(required = false) String phone,
+                                                     @RequestHeader(value = "X-User-Id", required = false) Long userId) {
         TrackingVO vo = courierCode != null && !courierCode.isBlank()
-            ? aliyunExpressService.queryByNumber(trackingNumber, courierCode, phone)
-            : aliyunExpressService.queryWithDiscern(trackingNumber, phone);
+            ? aliyunExpressService.queryByNumber(trackingNumber, courierCode, phone, userId)
+            : aliyunExpressService.queryWithDiscern(trackingNumber, phone, userId);
         return Result.ok(vo);
     }
 
