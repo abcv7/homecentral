@@ -6,6 +6,7 @@
 
 const ACCESS_KEY = 'auth:access'
 const REFRESH_KEY = 'auth:refresh'
+const USERNAME_KEY = 'auth:username'
 
 export function getAccessToken(): string | null {
   try {
@@ -39,10 +40,27 @@ export function setRefreshToken(token: string): void {
   }
 }
 
+export function getUsername(): string | null {
+  try {
+    return uni.getStorageSync(USERNAME_KEY) || null
+  } catch {
+    return null
+  }
+}
+
+export function setUsername(name: string): void {
+  try {
+    uni.setStorageSync(USERNAME_KEY, name)
+  } catch {
+    /* ignore */
+  }
+}
+
 export function clearTokens(): void {
   try {
     uni.removeStorageSync(ACCESS_KEY)
     uni.removeStorageSync(REFRESH_KEY)
+    uni.removeStorageSync(USERNAME_KEY)
   } catch {
     /* ignore */
   }

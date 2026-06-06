@@ -1,14 +1,15 @@
 /**
  * 调酒台 api
  * ==========
- * 调后端:
- *   GET  /api/workshop/ingredients  → 全量原料 (camelCase 后端 VO)
- *   POST /api/workshop/recommend    → 推荐结果 (camelCase 后端 VO)
+ * 端点:
+ *   GET  /api/workshop/ingredients  → 全量原料 (后端 ApiResult<IngredientVO[]>)
+ *   POST /api/workshop/recommend    → 推荐结果 (后端 ApiResult<RecommendResultVO[]>)
  *
- * FE 内部契约 (types/workshop) 用 snake_case,这里做一层 toX 转换。
+ * FE 内部约定 (types/workshop) 是 snake_case,运行时有一层 toX 转换。
  */
 
 import request from './request'
+import type { ApiResult } from '../types/api'
 import type { IngredientIndex } from '../types/workshop'
 
 // 后端 VO (camelCase)
@@ -78,7 +79,7 @@ let _byId: Map<number, IngredientIndex> = new Map()
 
 export async function loadIngredients(): Promise<IngredientIndex[]> {
   if (_ingredients.length > 0) return _ingredients
-  const res = await request.get<BackendIngredient[]>('/workshop/ingredients')
+  const res = await request.get<ApiResult<BackendIngredient[]>>('/workshop/ingredients')
   _ingredients = (res.data.data ?? []).map(toIngredientIndex)
   return _ingredients
 }
@@ -94,7 +95,7 @@ export async function recommendCocktails(
   ingredientIds: number[],
   mode: 'STRICT' | 'MAIN',
 ): Promise<BackendRecommendResult[]> {
-  const res = await request.post<BackendRecommendResult[]>(
+  const res = await request.post<ApiResult<BackendRecommendResult[]>>(
     '/workshop/recommend',
     { ingredientIds, mode },
   )

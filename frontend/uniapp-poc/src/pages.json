@@ -1,6 +1,20 @@
 {
   "pages": [
     {
+      "path": "pages/login/index",
+      "style": {
+        "navigationBarTitleText": "登录",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/register/index",
+      "style": {
+        "navigationBarTitleText": "注册",
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/fridge/index",
       "style": {
         "navigationBarTitleText": "冰箱"
@@ -16,6 +30,30 @@
       "path": "pages/workshop/index",
       "style": {
         "navigationBarTitleText": "调酒台"
+      }
+    },
+    {
+      "path": "pages/life/index",
+      "style": {
+        "navigationBarTitleText": "生活备忘"
+      }
+    },
+    {
+      "path": "pages/friend/index",
+      "style": {
+        "navigationBarTitleText": "好友"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/notification/index",
+      "style": {
+        "navigationBarTitleText": "通知"
       }
     }
   ],
@@ -34,8 +72,16 @@
         "text": "驿站"
       },
       {
-        "pagePath": "pages/workshop/index",
-        "text": "调酒台"
+        "pagePath": "pages/life/index",
+        "text": "生活"
+      },
+      {
+        "pagePath": "pages/friend/index",
+        "text": "好友"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
       }
     ]
   },

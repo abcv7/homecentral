@@ -8,7 +8,7 @@
  */
 
 import { getAccessToken, getRefreshToken, setAccessToken, setRefreshToken, clearTokens } from '../utils/token'
-import type { ApiResult, LoginResponse } from '../types/api'
+import type { LoginResponse } from '../types/api'
 
 interface RequestConfig {
   url: string
@@ -19,7 +19,7 @@ interface RequestConfig {
 }
 
 interface ApiResponse<T> {
-  data: ApiResult<T>
+  data: T
   status: number
 }
 
@@ -78,7 +78,7 @@ function request<T>(config: RequestConfig): Promise<ApiResponse<T>> {
         header: { ...buildHeaders(), ...(config.headers ?? {}) },
         timeout: 15000,
         success: (res) => {
-          const body = res.data as ApiResult<T>
+          const body = res.data as T
           if (res.statusCode === 401) {
             handleRefresh().then((newToken) => {
               if (!newToken) {
@@ -121,11 +121,11 @@ async function handleRefresh(): Promise<string | null> {
         method: 'POST',
         data: { refreshToken } as object,
         header: { 'Content-Type': 'application/json' },
-        success: (r) => resolve({ data: r.data as ApiResult<LoginResponse>, status: r.statusCode }),
+        success: (r) => resolve({ data: r.data as LoginResponse, status: r.statusCode }),
         fail: (e: unknown) => reject(e),
       })
     })
-    const data = res.data.data
+    const data = res.data
     if (!data) {
       clearTokens()
       uni.reLaunch({ url: '/pages/login/index' })

@@ -1,11 +1,12 @@
 /**
  * 冰箱 api
  * ========
- * types 从 ../types/fridge 共享 (FE 契约),后端 VO 名跟 FridgeXxxVO 对齐。
+ * types 走 ../types/fridge 转发 (FE 约定),后端 VO 经 FridgeXxxVO 导入。
+ * 所有端点统一用 ApiResult<T> 包装,匹配后端 Result<T>。
  */
 
 import request from './request'
-import type { PageVO } from '../types/api'
+import type { ApiResult } from '../types/api'
 import type {
   FridgeItemVO,
   FridgeExpiringVO,
@@ -18,44 +19,44 @@ import type {
   FridgeItemRequest,
 } from '../types/fridge'
 
-export function listItems(params?: { status?: string; page?: number; size?: number }) {
-  return request.get<PageVO<FridgeItemVO>>('/fridge/items', { params })
+export function listItems(params?: { status?: string; zone?: string; categoryId?: number; includePending?: boolean }) {
+  return request.get<ApiResult<FridgeItemVO[]>>('/fridge/items', { params })
 }
 
 export function createItem(data: FridgeItemRequest) {
-  return request.post<FridgeItemVO>('/fridge/items', data)
+  return request.post<ApiResult<FridgeItemVO>>('/fridge/items', data)
 }
 
 export function consumeItem(id: number) {
-  return request.post<null>(`/fridge/items/${id}/consume`)
+  return request.post<ApiResult<null>>(`/fridge/items/${id}/consume`)
 }
 
 export function discardItem(id: number) {
-  return request.post<null>(`/fridge/items/${id}/discard`)
+  return request.post<ApiResult<null>>(`/fridge/items/${id}/discard`)
 }
 
 export function getExpiringStats() {
-  return request.get<FridgeExpiringVO>('/fridge/items/expiring')
+  return request.get<ApiResult<FridgeExpiringVO>>('/fridge/items/expiring')
 }
 
 export function listCategories() {
-  return request.get<FridgeCategoryVO[]>('/fridge/categories')
+  return request.get<ApiResult<FridgeCategoryVO[]>>('/fridge/categories')
 }
 
 export function listTemplates() {
-  return request.get<FridgeTemplateVO[]>('/fridge/templates')
+  return request.get<ApiResult<FridgeTemplateVO[]>>('/fridge/templates')
 }
 
 export function createTemplate(data: FridgeTemplateRequest) {
-  return request.post<FridgeTemplateVO>('/fridge/templates', data)
+  return request.post<ApiResult<FridgeTemplateVO>>('/fridge/templates', data)
 }
 
 export function deleteTemplate(id: number) {
-  return request.delete<null>(`/fridge/templates/${id}`)
+  return request.delete<ApiResult<null>>(`/fridge/templates/${id}`)
 }
 
 export function confirmPurchase(items: FridgeShoppingItem[]) {
-  return request.post<FridgeShoppingHistoryVO>('/fridge/purchase/confirm', {
+  return request.post<ApiResult<FridgeShoppingHistoryVO>>('/fridge/purchase/confirm', {
     items,
   } as FridgeShoppingConfirmRequest)
 }
