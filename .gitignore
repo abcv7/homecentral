@@ -1,53 +1,63 @@
-environment/
-.m2/
-
-node_modules/
-dist/
-.vite/
-
-logs/
+# ===== Top-level noise (NOT in subdirs) =====
+/test-upload.txt
+/zvm_cache.json
+/opencode.json
+/.playwright-mcp/
+/.repo/
+/.serena/
+/.idea/
+/.vscode/
+/.DS_Store
+/*.log
 *.log
-.playwright-mcp/
-.mc-extract/
-.repo/
-.serena/
-
-*.png
-!frontend/WebPage/public/**/*.png
-!frontend/WebPage/src/**/*.png
-!frontend/WebPage/src/assets/**/*.png
-
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/
-*.iml
-
-# IDE / OS
-*.swp
-*.swo
-*~
-
-# Backend
-backend/target/
-**/target/
-**/*.class
-**/*.jar
-**/*.war
-
-# Local config with secrets
-infra/configs/local.yml
-backend/**/application-local.yml
-!backend/**/application-local.yml.example
-
-# Flyway repair
-backend/**/flyway.conf
-
-# Python
-__pycache__/
-*.pyc
-.venv/
-
-# Temporary
-*.tmp
 *.bak
+/[0-9][0-9]-*.png
+
+
+# ===== Backend tooling (local) =====
+/backend/.claude/
+/backend/.codex/
+/backend/.repo/
+/backend/.serena/
+/backend/.idea/
+/backend/.mvn/jvm.config.bak
+/backend/.mvn/maven.config
+/backend/.mvn/settings.xml
+
+# ===== Frontend tooling (local) =====
+/frontend/WebPage/.repo/
+/frontend/WebPage/.serena/
+/frontend/WebPage/.idea/
+
+# ===== Screenshot noise (E2E / 视觉验证) =====
+/after-*.png
+/before-*.png
+/screenshot-*.png
+
+# ===== Backend build outputs =====
+/backend/**/target/
+/backend/**/build/
+/backend/.flattened-pom.xml
+
+# ===== Local-only config (real creds; profile-switch handles local config in /backend/infra/configs/) =====
+**/application-local.yml
+**/application-dev.yml
+**/application-staging.yml
+**/application-prod.yml
+**/application-local.yaml
+**/application-*.local.yml
+/backend/infra/configs/local.yml
+
+# ===== Frontend build outputs =====
+/frontend/WebPage/node_modules/
+/frontend/WebPage/dist/
+/frontend/WebPage/dist-ssr/
+/frontend/WebPage/.env.local
+/frontend/WebPage/.env.*.local
+/frontend/WebPage/.vite/
+/frontend/WebPage/.cache/
+/frontend/WebPage/coverage/
+
+# ===== Test artifacts =====
+/backend/**/test-output/
+/backend/**/jacoco.exec
