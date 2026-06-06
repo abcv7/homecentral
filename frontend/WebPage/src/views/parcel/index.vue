@@ -147,6 +147,18 @@
             </template>
             <template v-else>-</template>
           </n-descriptions-item>
+          <n-descriptions-item label="已分享给">
+            <template v-if="(detail.sharedCount ?? 0) > 0">
+              <n-space size="small" align="center">
+                <n-badge :value="detail.sharedCount ?? 0" :max="99" type="info">
+                  <n-button size="tiny" quaternary @click="openShare(detail)">查看</n-button>
+                </n-badge>
+              </n-space>
+            </template>
+            <template v-else>
+              <n-button size="tiny" quaternary @click="openShare(detail)">分享给好友</n-button>
+            </template>
+          </n-descriptions-item>
           <n-descriptions-item label="创建时间">{{ detail.createdAt }}</n-descriptions-item>
         </n-descriptions>
       </n-drawer-content>
@@ -192,6 +204,78 @@
       </n-drawer-content>
     </n-drawer>
 
+    <!-- Share Drawer -->
+    <n-drawer v-model:show="showShare" :width="isMobile ? '92vw' : 420" placement="right">
+      <n-drawer-content
+        :title="`分享包裹 #${shareTargetId ?? ''}`"
+        closable
+      >
+        <n-spin :show="shareLoading">
+          <n-space vertical :size="16">
+            <!-- Already shared -->
+            <div>
+              <n-h6 style="margin: 0 0 8px;">已分享给 ({{ sharedToList.length }})</n-h6>
+              <n-empty v-if="!shareLoading && sharedToList.length === 0" size="small" description="尚未分享给任何好友" />
+              <n-list v-else bordered>
+                <n-list-item v-for="s in sharedToList" :key="s.userId">
+                  <n-thing>
+                    <template #header>{{ s.nickname || `用户#${s.userId}` }}</template>
+                    <template #description>
+                      <n-space size="small">
+                        <n-tag v-if="s.email" size="small" type="info">{{ s.email }}</n-tag>
+                        <n-text depth="3" style="font-size:12px">
+                          {{ s.sharedAt ? new Date(s.sharedAt).toLocaleString('zh-CN') : '' }}
+                        </n-text>
+                      </n-space>
+                    </template>
+                  </n-thing>
+                  <template #suffix>
+                    <n-button
+                      size="tiny"
+                      type="error"
+                      quaternary
+                      @click="handleUnshare(s.userId)"
+                    >
+                      取消
+                    </n-button>
+                  </template>
+                </n-list-item>
+              </n-list>
+            </div>
+
+            <n-divider />
+
+            <!-- Available friends to share -->
+            <div>
+              <n-h6 style="margin: 0 0 8px;">可分享的好友 ({{ availableFriends.length }})</n-h6>
+              <n-empty v-if="!shareLoading && availableFriends.length === 0" size="small" description="暂无可分享的好友（请先在好友页添加）" />
+              <n-list v-else bordered>
+                <n-list-item v-for="f in availableFriends" :key="f.friendUserId">
+                  <n-thing>
+                    <template #header>{{ f.friendName || `用户#${f.friendUserId}` }}</template>
+                    <template #description>
+                      <n-tag v-if="f.groupName" size="small" :color="{ color: f.groupColor || '#909399', textColor: '#fff' }">
+                        {{ f.groupName }}
+                      </n-tag>
+                    </template>
+                  </n-thing>
+                  <template #suffix>
+                    <n-button
+                      size="tiny"
+                      type="primary"
+                      @click="handleShare(f.friendUserId)"
+                    >
+                      分享
+                    </n-button>
+                  </template>
+                </n-list-item>
+              </n-list>
+            </div>
+          </n-space>
+        </n-spin>
+      </n-drawer-content>
+    </n-drawer>
+
     <!-- Recognition Panel -->
     <RecognitionPanel
       ref="recognitionPanel"
@@ -220,11 +304,13 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, h, computed } from 'vue'
-import { useMessage, NButton, NTag, NSpace, NIcon, NTimeline, NTimelineItem, NDescriptions, NDescriptionsItem, NDivider, NH5, NSpin, NEmpty, NBadge, NFloatButton } from 'naive-ui'
-import { AddOutline, CreateOutline, EyeOutline, LocateOutline, CameraOutline } from '@vicons/ionicons5'
+import { useMessage, NButton, NTag, NSpace, NIcon, NTimeline, NTimelineItem, NDescriptions, NDescriptionsItem, NDivider, NH5, NSpin, NEmpty, NBadge, NFloatButton, NList, NListItem, NThing, NText, NH6 } from 'naive-ui'
+import { AddOutline, CreateOutline, EyeOutline, LocateOutline, CameraOutline, ShareSocialOutline } from '@vicons/ionicons5'
 import type { DataTableColumn, FormInst, FormRules, SelectOption } from 'naive-ui'
-import type { ParcelVO, ParcelStatus, ParcelCreateRequest, ParcelUpdateRequest, TrackingVO } from '../../types/api'
-import { listParcels, getParcel, createParcel, updateParcel, pickUpParcel, receiveParcel, deleteParcel, queryParcelTracking, getPhoneTail } from '../../api/parcel'
+import type { ParcelVO, ParcelStatus, ParcelCreateRequest, ParcelUpdateRequest, SharedParcelUserVO, TrackingVO } from '../../types/api'
+import type { FriendRelationshipVO } from '../../types/friend'
+import { listParcels, getParcel, createParcel, updateParcel, pickUpParcel, receiveParcel, deleteParcel, queryParcelTracking, getPhoneTail, shareParcel, unshareParcel, listParcelShares } from '../../api/parcel'
+import { listMyRelationships } from '../../api/friend'
 import { uploadFile } from '../../api/file'
 import type { UploadFileInfo } from 'naive-ui'
 import RecognitionPanel from '../../components/RecognitionPanel.vue'
@@ -511,6 +597,73 @@ async function handleTracking(row: ParcelVO) {
   }
 }
 
+// --- Share ---
+const showShare = ref(false)
+const shareTargetId = ref<number | null>(null)
+const shareLoading = ref(false)
+const sharedToList = ref<SharedParcelUserVO[]>([])
+const acceptedFriends = ref<FriendRelationshipVO[]>([])
+
+async function openShare(row: ParcelVO) {
+  shareTargetId.value = row.id
+  showShare.value = true
+  await refreshShareData()
+}
+
+async function refreshShareData() {
+  if (shareTargetId.value == null) return
+  shareLoading.value = true
+  try {
+    const [sharesRes, friendsRes] = await Promise.all([
+      listParcelShares(shareTargetId.value),
+      listMyRelationships('ACCEPTED'),
+    ])
+    sharedToList.value = sharesRes.data.data
+    acceptedFriends.value = friendsRes.data.data
+  } catch (e: any) {
+    const msg = e?.response?.data?.message || '加载分享数据失败'
+    message.error(msg)
+  } finally {
+    shareLoading.value = false
+  }
+}
+
+const availableFriends = computed(() => {
+  const taken = new Set(sharedToList.value.map((s) => s.userId))
+  return acceptedFriends.value
+    .filter((f) => f.friendUserId != null && !taken.has(f.friendUserId))
+    .map((f) => ({
+      friendUserId: f.friendUserId!,
+      friendName: f.friendName ?? null,
+      groupName: f.groupName ?? null,
+      groupColor: f.groupColor ?? null,
+    }))
+})
+
+async function handleShare(targetUserId: number) {
+  if (shareTargetId.value == null) return
+  try {
+    await shareParcel(shareTargetId.value, targetUserId)
+    message.success('已分享')
+    await refreshShareData()
+    fetchList()
+  } catch (e: any) {
+    message.error(e?.response?.data?.message || '分享失败')
+  }
+}
+
+async function handleUnshare(targetUserId: number) {
+  if (shareTargetId.value == null) return
+  try {
+    await unshareParcel(shareTargetId.value, targetUserId)
+    message.success('已取消分享')
+    await refreshShareData()
+    fetchList()
+  } catch (e: any) {
+    message.error(e?.response?.data?.message || '取消分享失败')
+  }
+}
+
 // --- Columns ---
 function renderActions(row: ParcelVO) {
   return h(NSpace, { size: 'small' }, () => {
@@ -520,6 +673,9 @@ function renderActions(row: ParcelVO) {
       }),
       h(NButton, { size: 'tiny', quaternary: true, onClick: () => handleTracking(row) }, {
         icon: () => h(LocateOutline),
+      }),
+      h(NButton, { size: 'tiny', quaternary: true, onClick: () => openShare(row) }, {
+        icon: () => h(ShareSocialOutline),
       }),
     ]
     if (row.status === 'PENDING_PICKUP') {
@@ -600,6 +756,16 @@ const columns: DataTableColumn<ParcelVO>[] = [
     },
   },
   {
+    title: '分享',
+    key: 'sharedCount',
+    width: 70,
+    render(row) {
+      const n = row.sharedCount ?? 0
+      if (n === 0) return h(NText, { depth: 3, style: 'font-size:12px' }, { default: () => '-' })
+      return h(NTag, { size: 'small', type: 'info', round: true }, { default: () => `${n}人` })
+    },
+  },
+  {
     title: '创建时间',
     key: 'createdAt',
     width: 160,
@@ -607,7 +773,7 @@ const columns: DataTableColumn<ParcelVO>[] = [
   {
     title: '操作',
     key: 'actions',
-    width: 180,
+    width: 200,
     render: renderActions,
   },
 ]

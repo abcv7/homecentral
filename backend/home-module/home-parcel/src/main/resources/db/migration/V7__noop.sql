@@ -1,0 +1,3 @@
+-- V7: No-op migration. Phone is derived from member.phone via Feign at runtime.
+-- Phone column was added to home_auth.member (auth V2 migration).
+-- No schema change needed in home_parcel.
